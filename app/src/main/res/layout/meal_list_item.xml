@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="152dp"
+    android:background="@color/white"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/text_view_heading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@id/card_view_image_container"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="#272727"
+        android:textSize="18sp"
+        tools:text="Tikka massala chicken" />
+
+    <TextView
+        android:id="@+id/text_view_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_view_heading"
+        android:layout_marginTop="8dp"
+        android:layout_toStartOf="@id/card_view_image_container"
+        android:fontFamily="sans-serif-light"
+        android:textColor="#777777"
+        android:textSize="14sp"
+        tools:text="This will be a long description to see how it looks. This will be a long description to see how it looks. This will be a long" />
+
+    <RatingBar
+        android:id="@+id/rating_bar"
+        style="@style/Widget.AppCompat.RatingBar.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        tools:rating="3.5f" />
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_view_image_container"
+        android:layout_width="160dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="12dp"
+        app:cardCornerRadius="16dp">
+
+        <ImageView
+            android:id="@+id/image_view_item"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/meal" />
+    </androidx.cardview.widget.CardView>
+
+
+</RelativeLayout>

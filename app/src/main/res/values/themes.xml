@@ -1,0 +1,15 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.MyRecipes" parent="Theme.Material3.DayNight">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.MyRecipes.Home" parent="Base.Theme.MyRecipes">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="actionBarTheme">@null</item>
+    </style>
+
+    <style name="Theme.MyRecipes.Rest" parent="Base.Theme.MyRecipes"/>
+</resources>
