@@ -1,8 +1,8 @@
-package com.staszek15.myrecipes
+package com.staszek15.myrecipes.home
 
 import androidx.annotation.DrawableRes
 
-data class MealItemClass(
+data class HomeListItem(
     val heading: String,
     val description: String,
     @DrawableRes

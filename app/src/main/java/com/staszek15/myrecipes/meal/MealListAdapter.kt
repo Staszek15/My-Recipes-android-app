@@ -1,4 +1,4 @@
-package com.staszek15.myrecipes
+package com.staszek15.myrecipes.meal
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +8,8 @@ import com.staszek15.myrecipes.databinding.MealListItemBinding
 
 class MealListAdapter(
     private val mealItemsList: List<MealItemClass>,
-    private val listener: RecyclerViewEvent):
+    private val listener: RecyclerViewEvent
+):
     RecyclerView.Adapter<MealListAdapter.MealListViewHolder>(){
 
     inner class MealListViewHolder(binding: MealListItemBinding):
@@ -41,7 +42,7 @@ class MealListAdapter(
     }
 
     override fun onBindViewHolder(holder: MealListViewHolder, position: Int) {
-        holder.heading.text = mealItemsList[position].heading
+        holder.heading.text = mealItemsList[position].title
         holder.description.text = mealItemsList[position].description
         holder.image.setImageResource(mealItemsList[position].image)
         holder.rating.rating = mealItemsList[position].rating

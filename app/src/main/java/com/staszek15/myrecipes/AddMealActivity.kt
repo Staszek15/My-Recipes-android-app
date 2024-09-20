@@ -7,9 +7,12 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import com.staszek15.myrecipes.databinding.ActivityAddMealBinding
 
 class AddMealActivity : AppCompatActivity() {
@@ -21,7 +24,14 @@ class AddMealActivity : AppCompatActivity() {
         binding = ActivityAddMealBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupDropdownMenu()
         handleImageSelection()
+    }
+
+    private fun setupDropdownMenu() {
+        val items = listOf("Dinner", "Breakfast", "Dessert", "Shake", "Alcohol", "Decoration")
+        val adapter = ArrayAdapter(this, R.layout.dropdown_item, items)
+        (binding.dropdownTextfield.editText as? AutoCompleteTextView)?.setAdapter(adapter)
     }
 
 

@@ -1,4 +1,4 @@
-package com.staszek15.myrecipes
+package com.staszek15.myrecipes.home
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +8,8 @@ import com.staszek15.myrecipes.databinding.HomeListItemBinding
 
 class HomeListAdapter(
     private val homeItemsList: List<HomeItemClass>,
-    private val listener: RecyclerViewEvent) :
+    private val listener: RecyclerViewEvent
+) :
     RecyclerView.Adapter<HomeListAdapter.HomeListViewHolder>() {
 
     inner class HomeListViewHolder(binding: HomeListItemBinding) :

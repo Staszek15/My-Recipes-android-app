@@ -1,4 +1,4 @@
-package com.staszek15.myrecipes
+package com.staszek15.myrecipes.home
 
 import androidx.annotation.DrawableRes
 

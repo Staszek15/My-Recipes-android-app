@@ -49,10 +49,26 @@
 
 
         <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:id="@+id/dropdown_textfield">
+
+            <AutoCompleteTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Meal type"
+                android:inputType="none" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="28dp"
             android:hint="Title"
             app:counterEnabled="true"
             app:counterMaxLength="25">
@@ -64,7 +80,7 @@
                 android:inputType="text"
                 android:maxLength="25"
                 android:singleLine="true"
-                tools:text="title"/>
+                tools:text="title" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

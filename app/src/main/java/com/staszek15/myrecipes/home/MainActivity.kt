@@ -1,10 +1,11 @@
-package com.staszek15.myrecipes
+package com.staszek15.myrecipes.home
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.staszek15.myrecipes.meal.MealListActivity
+import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), HomeListAdapter.RecyclerViewEvent {
@@ -31,7 +32,7 @@ class MainActivity : AppCompatActivity(), HomeListAdapter.RecyclerViewEvent {
     override fun myOnItemClick(position: Int) {
         val clickedItem = homeList[position]
         val intent = Intent(this, MealListActivity::class.java)
-        intent.putExtra("header", clickedItem.text)
+        intent.putExtra("mealType", clickedItem.text)
         startActivity(intent)
     }
 
@@ -47,6 +48,7 @@ class MainActivity : AppCompatActivity(), HomeListAdapter.RecyclerViewEvent {
     private fun setUpClickListeners() {
         binding.homeFavouriteCardView.setOnClickListener {
             val intent = Intent(this, MealListActivity::class.java)
+            intent.putExtra("mealType", "Favourites")
             startActivity(intent)
         }
     }
