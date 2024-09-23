@@ -1,10 +1,12 @@
 package com.staszek15.myrecipes.meal
 
+import android.app.ActionBar
 import android.content.Intent
 import android.health.connect.datatypes.MealType
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -59,7 +61,6 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
             startActivity(intent)
         }
     }
-
 
     private fun createMealList(): List<MealItemClass> = buildList {
         add(

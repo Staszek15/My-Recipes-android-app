@@ -15,13 +15,14 @@
         <activity
             android:name=".AddMealActivity"
             android:exported="false"
-            android:parentActivityName=".meal.MealListActivity"
             android:label="Add meal"
+            android:parentActivityName=".meal.MealListActivity"
             android:screenOrientation="nosensor"
             android:theme="@style/Theme.MyRecipes.Rest" />
         <activity
             android:name=".meal.MealListActivity"
             android:exported="false"
+            android:launchMode="singleTop"
             android:parentActivityName=".home.MainActivity"
             android:screenOrientation="nosensor"
             android:theme="@style/Theme.MyRecipes.Rest" />

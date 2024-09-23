@@ -13,7 +13,9 @@ import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.view.drawToBitmap
 import com.staszek15.myrecipes.databinding.ActivityAddMealBinding
+import com.staszek15.myrecipes.meal.MealItemClass
 
 class AddMealActivity : AppCompatActivity() {
 
@@ -26,6 +28,11 @@ class AddMealActivity : AppCompatActivity() {
 
         setupDropdownMenu()
         handleImageSelection()
+        //handleClickListeners()
+    }
+
+    private fun handleClickListeners() {
+
     }
 
     private fun setupDropdownMenu() {
