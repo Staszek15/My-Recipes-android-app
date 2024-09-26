@@ -4,8 +4,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room.databaseBuilder
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.staszek15.myrecipes.Converters
 
-@Database(entities = [MealItemClass::class], version = 2)
+@Database(entities = [MealItemClass::class], version = 3)
+@TypeConverters(Converters::class)
 abstract class MealDatabase : RoomDatabase() {
 
     abstract fun getMealDao(): MealDao

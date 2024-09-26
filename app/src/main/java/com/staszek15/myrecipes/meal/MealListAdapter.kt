@@ -44,8 +44,8 @@ class MealListAdapter(
     override fun onBindViewHolder(holder: MealListViewHolder, position: Int) {
         holder.heading.text = mealItemsList[position].title
         holder.description.text = mealItemsList[position].description
-        holder.image.setImageResource(mealItemsList[position].image)
         holder.rating.rating = mealItemsList[position].rating
+        holder.image.setImageBitmap(mealItemsList[position].image)
     }
 
 

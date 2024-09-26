@@ -1,5 +1,6 @@
 package com.staszek15.myrecipes.meal
 
+import android.graphics.Bitmap
 import androidx.annotation.DrawableRes
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -11,8 +12,7 @@ data class MealItemClass(
     val title: String,
     val description: String,
     val recipe: String,
-    @DrawableRes
-    val image: Int,
+    val image: Bitmap,
     val rating: Float,
     val favourite: Boolean = false
 )

@@ -32,7 +32,17 @@ class AddMealActivity : AppCompatActivity() {
     }
 
     private fun handleClickListeners() {
-
+        binding.buttonAdd.setOnClickListener {
+            val meal = MealItemClass(
+                type = binding.dropdownType.text.toString(),
+                title = binding.editTextTitle.text.toString(),
+                description = binding.editTextDescription.text.toString(),
+                recipe = binding.editTextRecipe.text.toString(),
+                image = binding.imageViewAdd.drawToBitmap(),
+                rating = binding.ratingBar.rating,
+                favourite = false
+            )
+        }
     }
 
     private fun setupDropdownMenu() {
