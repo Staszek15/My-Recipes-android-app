@@ -1,11 +1,15 @@
 package com.staszek15.myrecipes
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.PorterDuff
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
@@ -35,6 +39,59 @@ class AddMealActivity : AppCompatActivity() {
         handleImageSelection()
         handleClickListeners()
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection.
+        return when (item.itemId) {
+            R.id.icon_edit -> {
+                showEditDialog()
+                true
+            }
+            R.id.icon_delete -> {
+                showDeleteDialog()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun showDeleteDialog() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder
+            .setTitle("Warning!")
+            .setMessage("Do you want to delete this record?")
+            .setPositiveButton("Yes") { dialog, which ->
+                // Do something.
+            }
+            .setNegativeButton("No") { dialog, which ->
+                dialog.dismiss()
+            }
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
+
+    private fun showEditDialog() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder
+            .setTitle("Warning!")
+            .setMessage("Do you want to edit this record?")
+            .setPositiveButton("Yes") { dialog, which ->
+                // Do something.
+            }
+            .setNegativeButton("No") { dialog, which ->
+                dialog.dismiss()
+            }
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.menu_toolbar, menu)
+        return true
+    }
+
 
     private fun handleClickListeners() {
         binding.buttonAdd.setOnClickListener {
