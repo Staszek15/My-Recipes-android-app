@@ -1,15 +1,11 @@
-package com.staszek15.myrecipes
+package com.staszek15.myrecipes.mealAdd
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.PorterDuff
 import android.os.Bundle
 import android.provider.MediaStore
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
@@ -17,18 +13,19 @@ import android.widget.AutoCompleteTextView
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.drawToBitmap
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.ActivityAddMealBinding
-import com.staszek15.myrecipes.meal.MealDatabase
-import com.staszek15.myrecipes.meal.MealItemClass
+import com.staszek15.myrecipes.mealDB.MealDatabase
+import com.staszek15.myrecipes.mealDB.MealItemClass
+import com.staszek15.myrecipes.mealList.AddIngredientAdapter
 
 class AddMealActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddMealBinding
+    private var ingredientsList = mutableListOf(IngredientClass("",""))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,63 +34,26 @@ class AddMealActivity : AppCompatActivity() {
 
         setupDropdownMenu()
         handleImageSelection()
+        setupIngredientRecyclerView(ingredientsList)
         handleClickListeners()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle item selection.
-        return when (item.itemId) {
-            R.id.icon_edit -> {
-                showEditDialog()
-                true
-            }
-            R.id.icon_delete -> {
-                showDeleteDialog()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun showDeleteDialog() {
-        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-        builder
-            .setTitle("Warning!")
-            .setMessage("Do you want to delete this record?")
-            .setPositiveButton("Yes") { dialog, which ->
-                // Do something.
-            }
-            .setNegativeButton("No") { dialog, which ->
-                dialog.dismiss()
-            }
-        val dialog: AlertDialog = builder.create()
-        dialog.show()
-    }
-
-
-    private fun showEditDialog() {
-        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-        builder
-            .setTitle("Warning!")
-            .setMessage("Do you want to edit this record?")
-            .setPositiveButton("Yes") { dialog, which ->
-                // Do something.
-            }
-            .setNegativeButton("No") { dialog, which ->
-                dialog.dismiss()
-            }
-        val dialog: AlertDialog = builder.create()
-        dialog.show()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.menu_toolbar, menu)
-        return true
+    private fun setupIngredientRecyclerView(ingredientsList :MutableList<IngredientClass>) {
+        val adapterIngredients = AddIngredientAdapter(ingredientsList)
+        binding.rvIngredients.adapter = adapterIngredients
+        binding.rvIngredients.layoutManager = LinearLayoutManager(applicationContext)
     }
 
 
     private fun handleClickListeners() {
+
+        // button add ingredient
+        binding.ButtonAddIngredient.setOnClickListener {
+            ingredientsList.add(IngredientClass("",""))
+            binding.rvIngredients.adapter?.notifyItemInserted(ingredientsList.size - 1)
+        }
+        
+        // button add meal
         binding.buttonAdd.setOnClickListener {
             val newMeal = MealItemClass(
                 type = binding.dropdownType.text.toString(),
@@ -104,6 +64,7 @@ class AddMealActivity : AppCompatActivity() {
                 rating = binding.ratingBar.rating,
                 favourite = false
             )
+            // TODO: coroutines here & uncomment create 
             val database = MealDatabase.getMealDatabase(this)
             val mealDao = database.getMealDao()
             //mealDao.createMeal(newMeal)

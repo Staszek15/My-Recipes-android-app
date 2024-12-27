@@ -2,6 +2,10 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="raspberry">#EB0165</color>
+    <color name="beige_background">#f2d8bd</color>
+    <color name="pastel_pink">#ffe3ed</color>
+
     <color name="purple_dark">#401A3B</color>
     <color name="background">#EBCCAA</color>
 </resources>

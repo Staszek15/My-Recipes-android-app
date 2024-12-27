@@ -1,4 +1,4 @@
-package com.staszek15.myrecipes.meal
+package com.staszek15.myrecipes.mealDB
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -16,6 +16,9 @@ interface MealDao {
 
     @Query("SELECT * FROM meal")
     fun getAllMeals(): List<MealItemClass>
+
+    @Query("SELECT * FROM meal WHERE mealId=:mealId")
+    fun getExactMeal(mealId: Int): MealItemClass
 
     @Query("SELECT * FROM meal WHERE type=:mealType")
     fun getTypeMeals(mealType: String): List<MealItemClass>

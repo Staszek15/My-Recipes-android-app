@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/beige_background"
+    android:orientation="vertical"
+    tools:context=".mealDetails.DetailsActivity">
+
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/iv_meal"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/dinner"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.RoundedCorner" />
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="32dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginRight="32dp"
+            android:orientation="vertical"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingBottom="40dp">
+
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                tools:text="Chicken Tikka Masala" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="2dp"
+                android:layout_marginLeft="68dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginRight="68dp"
+                android:background="@color/purple_dark" />
+
+            <ListView
+                android:id="@+id/lv_ingredients"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:divider="@null"
+                android:dividerHeight="4dp"
+                android:scrollbars="none"
+                tools:layout_height="150dp"
+                tools:listitem="@layout/ingredient_display_item" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="2dp"
+                android:layout_marginLeft="68dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginRight="68dp"
+                android:background="@color/purple_dark" />
+
+            <TextView
+                android:id="@+id/tv_recipe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/tikka_masala_recipe" />
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+</LinearLayout>

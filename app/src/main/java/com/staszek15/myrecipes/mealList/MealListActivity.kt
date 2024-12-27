@@ -1,19 +1,14 @@
-package com.staszek15.myrecipes.meal
+package com.staszek15.myrecipes.mealList
 
-import android.app.ActionBar
 import android.content.Intent
-import android.graphics.BitmapFactory
-import android.health.connect.datatypes.MealType
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.MenuItem
-import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.staszek15.myrecipes.AddMealActivity
-import com.staszek15.myrecipes.Converters
-import com.staszek15.myrecipes.R
+import com.staszek15.myrecipes.mealDB.MealDatabase
+import com.staszek15.myrecipes.mealDB.MealItemClass
+import com.staszek15.myrecipes.mealAdd.AddMealActivity
+import com.staszek15.myrecipes.mealDetails.DetailsActivity
 import com.staszek15.myrecipes.databinding.ActivityMealListBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -67,11 +62,9 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
     // override function from interface in adapter file
     override fun myOnItemClick(position: Int) {
         val clickedItem = mealList[position]
-        Toast.makeText(
-            this,
-            "Clicked ${clickedItem.title}, ID: ${clickedItem.mealId}.",
-            Toast.LENGTH_SHORT
-        ).show()
+        val intent = Intent(this, DetailsActivity::class.java)
+        intent.putExtra("clicked_item_id", clickedItem.mealId)
+        startActivity(intent)
     }
 
 }

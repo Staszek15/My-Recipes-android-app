@@ -13,14 +13,21 @@
         android:theme="@style/Theme.MyRecipes.Home"
         tools:targetApi="31">
         <activity
-            android:name=".AddMealActivity"
+            android:name=".mealDetails.DetailsActivity"
             android:exported="false"
-            android:label="Add meal"
-            android:parentActivityName=".meal.MealListActivity"
+            android:label="Meal details"
+            android:parentActivityName=".mealList.MealListActivity"
             android:screenOrientation="nosensor"
             android:theme="@style/Theme.MyRecipes.Rest" />
         <activity
-            android:name=".meal.MealListActivity"
+            android:name=".mealAdd.AddMealActivity"
+            android:exported="false"
+            android:label="Add meal"
+            android:parentActivityName=".mealList.MealListActivity"
+            android:screenOrientation="nosensor"
+            android:theme="@style/Theme.MyRecipes.Rest" />
+        <activity
+            android:name=".mealList.MealListActivity"
             android:exported="false"
             android:launchMode="singleTop"
             android:parentActivityName=".home.MainActivity"

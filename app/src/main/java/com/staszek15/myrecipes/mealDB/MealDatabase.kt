@@ -1,4 +1,4 @@
-package com.staszek15.myrecipes.meal
+package com.staszek15.myrecipes.mealDB
 
 import android.content.Context
 import androidx.room.Database
