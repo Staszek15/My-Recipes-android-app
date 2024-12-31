@@ -1,11 +1,13 @@
 package com.staszek15.myrecipes.mealAdd
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.PorterDuff
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
@@ -25,7 +27,7 @@ import com.staszek15.myrecipes.mealList.AddIngredientAdapter
 class AddMealActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddMealBinding
-    private var ingredientsList = mutableListOf(IngredientClass("",""))
+    private var ingredientsList = mutableListOf(IngredientClass("", ""))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +40,7 @@ class AddMealActivity : AppCompatActivity() {
         handleClickListeners()
     }
 
-    private fun setupIngredientRecyclerView(ingredientsList :MutableList<IngredientClass>) {
+    private fun setupIngredientRecyclerView(ingredientsList: MutableList<IngredientClass>) {
         val adapterIngredients = AddIngredientAdapter(ingredientsList)
         binding.rvIngredients.adapter = adapterIngredients
         binding.rvIngredients.layoutManager = LinearLayoutManager(applicationContext)
@@ -49,12 +51,23 @@ class AddMealActivity : AppCompatActivity() {
 
         // button add ingredient
         binding.ButtonAddIngredient.setOnClickListener {
-            ingredientsList.add(IngredientClass("",""))
+            ingredientsList.add(IngredientClass("", ""))
             binding.rvIngredients.adapter?.notifyItemInserted(ingredientsList.size - 1)
         }
-        
+        // button clear ingredients
+        binding.ButtonDeleteIngredient.setOnClickListener {
+            showClearIngredientsDialog()
+        }
+
         // button add meal
         binding.buttonAdd.setOnClickListener {
+
+            val twoElementLists: List<List<String>> =
+                ingredientsList.map { listOf(it.amount, it.ingredient) }
+                    .filter { it[0].isNotEmpty() || it[1].isNotEmpty() }
+
+            Log.i("ingredient tag", twoElementLists.toString())
+
             val newMeal = MealItemClass(
                 type = binding.dropdownType.text.toString(),
                 title = binding.editTextTitle.text.toString(),
@@ -64,15 +77,22 @@ class AddMealActivity : AppCompatActivity() {
                 rating = binding.ratingBar.rating,
                 favourite = false
             )
-            // TODO: coroutines here & uncomment create 
+            // TODO: coroutines here & uncomment create
             val database = MealDatabase.getMealDatabase(this)
             val mealDao = database.getMealDao()
             //mealDao.createMeal(newMeal)
-            Snackbar.make(binding.root, "Your recipe for ${newMeal.title} has been added to the ${newMeal.type}s list. Enjoy!", Snackbar.LENGTH_INDEFINITE)
+            Snackbar.make(
+                binding.root,
+                "Your recipe for ${newMeal.title} has been added to the ${newMeal.type}s list. Enjoy!",
+                Snackbar.LENGTH_INDEFINITE
+            )
                 .setAction("OK") { }
                 .show()
 
             clearTextFields()
+            ingredientsList.clear()
+            ingredientsList.add(IngredientClass("", ""))
+            binding.rvIngredients.adapter?.notifyDataSetChanged()
         }
     }
 
@@ -112,7 +132,8 @@ class AddMealActivity : AppCompatActivity() {
                 }
             }
         binding.cardViewImageAdd.setOnClickListener {
-            val intentSelectImage = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+            val intentSelectImage =
+                Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
             changeImage.launch(intentSelectImage)
         }
     }
@@ -124,5 +145,23 @@ class AddMealActivity : AppCompatActivity() {
             imm.hideSoftInputFromWindow(this.currentFocus!!.windowToken, 0)
         }
         return super.dispatchTouchEvent(ev)
+    }
+
+
+    private fun showClearIngredientsDialog() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder
+            .setTitle("Warning!")
+            .setMessage("Do you want to delete all of the entered ingredients?")
+            .setPositiveButton("Delete") { dialog, which ->
+                ingredientsList.clear()
+                ingredientsList.add(IngredientClass("", ""))
+                binding.rvIngredients.adapter?.notifyDataSetChanged()
+            }
+            .setNegativeButton("Dismiss") { dialog, which ->
+                dialog.dismiss()
+            }
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
     }
 }

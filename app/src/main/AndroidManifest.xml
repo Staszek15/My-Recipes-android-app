@@ -24,6 +24,7 @@
             android:exported="false"
             android:label="Add meal"
             android:parentActivityName=".mealList.MealListActivity"
+            android:windowSoftInputMode="adjustPan"
             android:screenOrientation="nosensor"
             android:theme="@style/Theme.MyRecipes.Rest" />
         <activity
