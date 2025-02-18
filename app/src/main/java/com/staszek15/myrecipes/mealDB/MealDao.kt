@@ -20,10 +20,10 @@ interface MealDao {
     @Query("SELECT * FROM meal WHERE mealId=:mealId")
     fun getExactMeal(mealId: Int): MealItemClass
 
-    @Query("SELECT * FROM meal WHERE type=:mealType")
+    @Query("SELECT * FROM meal WHERE type=:mealType ORDER BY favourite DESC, title ASC")
     fun getTypeMeals(mealType: String): List<MealItemClass>
 
-    @Query("SELECT * FROM meal WHERE favourite=1")
+    @Query("SELECT * FROM meal WHERE favourite=1 ORDER BY title ASC")
     fun getFavMeals(): List<MealItemClass>
 
     @Update

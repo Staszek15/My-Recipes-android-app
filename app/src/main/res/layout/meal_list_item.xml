@@ -38,18 +38,21 @@
         tools:rating="3.5f" />
 
     <TextView
+        android:id="@+id/fav_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/rating_bar"
         android:layout_alignParentBottom="true"
-        android:text="FAVOURITE"
         android:layout_marginStart="24dp"
+        android:layout_toEndOf="@id/rating_bar"
         android:shadowColor="#000000"
         android:shadowDx="0.5"
         android:shadowDy="0.5"
         android:shadowRadius="0.5"
+        android:text="FAVOURITE"
+        android:textColor="?attr/colorPrimary"
         android:textStyle="bold"
-        android:textColor="?attr/colorPrimary"/>
+        android:visibility="invisible"
+        tools:visibility="visible" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/card_view_image_container"

@@ -30,8 +30,6 @@
             android:layout_marginTop="12dp"
             android:layout_marginRight="32dp"
             android:orientation="vertical"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
             android:paddingBottom="40dp">
 
 
@@ -52,16 +50,13 @@
                 android:layout_marginRight="68dp"
                 android:background="@color/purple_dark" />
 
-            <ListView
-                android:id="@+id/lv_ingredients"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_ingredients"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:divider="@null"
-                android:dividerHeight="4dp"
-                android:scrollbars="none"
-                tools:layout_height="150dp"
-                tools:listitem="@layout/ingredient_display_item" />
+                tools:listitem="@layout/ingredient_display_item"
+                tools:itemCount="10"/>
 
             <View
                 android:layout_width="wrap_content"

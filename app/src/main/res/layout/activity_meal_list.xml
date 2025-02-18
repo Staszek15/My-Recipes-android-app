@@ -28,6 +28,6 @@
         app:fabSize="auto"
         app:maxImageSize="48dp"
         app:tint="@color/raspberry"
-        tools:ignore="ContentDescription" />
+        android:contentDescription="Plus button to add a new meal"/>
 
 </RelativeLayout>

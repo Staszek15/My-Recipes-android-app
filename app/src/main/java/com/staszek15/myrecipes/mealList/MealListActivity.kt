@@ -3,6 +3,7 @@ package com.staszek15.myrecipes.mealList
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.staszek15.myrecipes.mealDB.MealDatabase
@@ -23,12 +24,13 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
         super.onCreate(savedInstanceState)
         binding = ActivityMealListBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         var mealType: String = intent.getStringExtra("mealType")!!
         this.title = mealType
         mealType = mealType.dropLast(1)   // delete 's' to match type in database
 
         setupDatabase(mealType)
-        handleClickListeners()
+        handleClickListeners(mealType)
     }
 
 
@@ -52,10 +54,17 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
         binding.mealsRecyclerView.adapter = adapter
     }
 
-    private fun handleClickListeners() {
-        binding.fab.setOnClickListener {
-            val intent = Intent(this, AddMealActivity::class.java)
-            startActivity(intent)
+    private fun handleClickListeners(mealType: String) {
+
+        // fab invisible in favourites list
+        if (mealType == "Favourite") {
+            binding.fab.visibility = View.INVISIBLE
+        } else {
+            binding.fab.setOnClickListener {
+                val intent = Intent(this, AddMealActivity::class.java)
+                intent.putExtra("mealType", mealType)
+                startActivity(intent)
+            }
         }
     }
 

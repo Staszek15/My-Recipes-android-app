@@ -3,6 +3,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/beige_background">
@@ -111,6 +112,7 @@
                 android:gravity="top"
                 android:inputType="textMultiLine"
                 android:lines="5"
+                android:minLines="5"
                 android:maxLength="130"
                 tools:text="This will be a long description to see how it looks. This will be a long description to see how it looks. This will be a long" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -118,8 +120,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_marginTop="28dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
             android:background="@drawable/background_ingredients"
             android:orientation="vertical"
             android:padding="16dp">
@@ -128,19 +130,21 @@
                 android:id="@+id/rv_ingredients"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:listitem="@layout/ingredient_add_item"
-                tools:itemCount="4"/>
+                tools:itemCount="4"
+                tools:listitem="@layout/ingredient_add_item" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="4dp">
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/ButtonAddIngredient"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_weight="1"
                     android:drawableLeft="@drawable/baseline_add_24"
                     android:padding="12dp"
                     android:text="Add Ingredient"
@@ -149,15 +153,13 @@
                     app:cornerRadius="8dp"
                     app:iconTint="@null"
                     app:strokeColor="#808080"
-                    android:layout_marginEnd="16dp"
-                    android:layout_weight="1"
                     app:strokeWidth="2dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/ButtonDeleteIngredient"
-                    android:layout_weight="2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="2"
                     android:drawableLeft="@drawable/baseline_delete_24"
                     android:padding="12dp"
                     android:text="Clear"
@@ -187,7 +189,7 @@
                 android:gravity="top"
                 android:inputType="textMultiLine"
                 android:minHeight="300dp"
-                android:scrollbars="vertical"
+                android:minLines="8"
                 tools:text="@string/tikka_masala_recipe" />
         </com.google.android.material.textfield.TextInputLayout>
 

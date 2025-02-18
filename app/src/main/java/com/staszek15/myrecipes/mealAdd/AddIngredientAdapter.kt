@@ -1,14 +1,11 @@
-package com.staszek15.myrecipes.mealList
+package com.staszek15.myrecipes.mealAdd
 
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.staszek15.myrecipes.databinding.IngredientAddItemBinding
-import com.staszek15.myrecipes.mealAdd.IngredientClass
 
 
 class AddIngredientAdapter(

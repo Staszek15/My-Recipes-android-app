@@ -10,6 +10,7 @@ data class MealItemClass(
     val type: String,
     val title: String,
     val description: String,
+    val ingredients: String?,
     val recipe: String,
     val image: Bitmap,
     val rating: Float,

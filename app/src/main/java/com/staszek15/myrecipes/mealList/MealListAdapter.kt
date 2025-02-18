@@ -19,6 +19,7 @@ class MealListAdapter(
         val description = binding.textViewDescription
         val image = binding.imageViewItem
         val rating = binding.ratingBar
+        val favLabel = binding.favLabel
 
         init {
             binding.root.setOnClickListener(this)
@@ -47,6 +48,11 @@ class MealListAdapter(
         holder.description.text = mealItemsList[position].description
         holder.rating.rating = mealItemsList[position].rating
         holder.image.setImageBitmap(mealItemsList[position].image)
+
+        // favorite label visible only for favorite records
+        if (mealItemsList[position].favourite) {
+            holder.favLabel.visibility = View.VISIBLE
+        }
     }
 
 

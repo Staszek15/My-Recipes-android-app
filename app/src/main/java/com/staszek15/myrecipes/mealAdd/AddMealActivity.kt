@@ -8,21 +8,29 @@ import android.graphics.PorterDuff
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.MenuItem
 import android.view.MotionEvent
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.ImageView
+import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.drawToBitmap
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.ActivityAddMealBinding
 import com.staszek15.myrecipes.mealDB.MealDatabase
 import com.staszek15.myrecipes.mealDB.MealItemClass
-import com.staszek15.myrecipes.mealList.AddIngredientAdapter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class AddMealActivity : AppCompatActivity() {
 
@@ -34,16 +42,42 @@ class AddMealActivity : AppCompatActivity() {
         binding = ActivityAddMealBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupDropdownMenu()
+        val mealType: String = intent.getStringExtra("mealType")!!
+
+        setupDropdownMenu(mealType)
         handleImageSelection()
         setupIngredientRecyclerView(ingredientsList)
         handleClickListeners()
+        overrideBackNavigation()
+
+
     }
+
+
+    private fun overrideBackNavigation() {
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                showConfirmExitDialog()
+            }
+        }
+        this.onBackPressedDispatcher.addCallback(this, callback)
+    }
+
 
     private fun setupIngredientRecyclerView(ingredientsList: MutableList<IngredientClass>) {
         val adapterIngredients = AddIngredientAdapter(ingredientsList)
         binding.rvIngredients.adapter = adapterIngredients
         binding.rvIngredients.layoutManager = LinearLayoutManager(applicationContext)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressedDispatcher.onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
 
@@ -62,17 +96,19 @@ class AddMealActivity : AppCompatActivity() {
         // button add meal
         binding.buttonAdd.setOnClickListener {
 
-            val twoElementLists: List<List<String>> =
-                ingredientsList.map { listOf(it.amount, it.ingredient) }
-                    .filter { it[0].isNotEmpty() || it[1].isNotEmpty() }
+            ingredientsList =
+                ingredientsList.filter { it.amount.isNotEmpty() || it.ingredient.isNotEmpty() }
+                    .toMutableList()
 
-            Log.i("ingredient tag", twoElementLists.toString())
+            //Log.i("ingredient tag", ingredientsList.toString())
+            //Log.i("ingredient tag", Json.encodeToString(ingredientsList))
 
             val newMeal = MealItemClass(
                 type = binding.dropdownType.text.toString(),
                 title = binding.editTextTitle.text.toString(),
                 description = binding.editTextDescription.text.toString(),
                 recipe = binding.editTextRecipe.text.toString(),
+                ingredients = Json.encodeToString(ingredientsList),
                 image = binding.imageViewAdd.drawToBitmap(),
                 rating = binding.ratingBar.rating,
                 favourite = false
@@ -80,7 +116,10 @@ class AddMealActivity : AppCompatActivity() {
             // TODO: coroutines here & uncomment create
             val database = MealDatabase.getMealDatabase(this)
             val mealDao = database.getMealDao()
-            //mealDao.createMeal(newMeal)
+
+            lifecycleScope.launch(Dispatchers.IO) {
+                //mealDao.createMeal(newMeal)
+            }
             Snackbar.make(
                 binding.root,
                 "Your recipe for ${newMeal.title} has been added to the ${newMeal.type}s list. Enjoy!",
@@ -90,13 +129,11 @@ class AddMealActivity : AppCompatActivity() {
                 .show()
 
             clearTextFields()
-            ingredientsList.clear()
-            ingredientsList.add(IngredientClass("", ""))
-            binding.rvIngredients.adapter?.notifyDataSetChanged()
         }
     }
 
     private fun clearTextFields() {
+        clearIngredients()
         binding.dropdownType.text.clear()
         binding.editTextTitle.text?.clear()
         binding.editTextDescription.text?.clear()
@@ -110,10 +147,11 @@ class AddMealActivity : AppCompatActivity() {
         binding.imageViewAdd.scaleType = ImageView.ScaleType.FIT_CENTER
     }
 
-    private fun setupDropdownMenu() {
+    private fun setupDropdownMenu(mealType: String) {
         val items = listOf("Dinner", "Breakfast", "Dessert", "Shake", "Alcohol", "Decoration")
         val adapter = ArrayAdapter(this, R.layout.dropdown_item, items)
-        (binding.dropdownTextfield.editText as? AutoCompleteTextView)?.setAdapter(adapter)
+        binding.dropdownType.setAdapter(adapter)
+        binding.dropdownType.setText(mealType, false)
     }
 
 
@@ -153,15 +191,35 @@ class AddMealActivity : AppCompatActivity() {
         builder
             .setTitle("Warning!")
             .setMessage("Do you want to delete all of the entered ingredients?")
-            .setPositiveButton("Delete") { dialog, which ->
-                ingredientsList.clear()
-                ingredientsList.add(IngredientClass("", ""))
-                binding.rvIngredients.adapter?.notifyDataSetChanged()
+            .setPositiveButton("Delete") { _, _ ->
+                clearIngredients()
             }
-            .setNegativeButton("Dismiss") { dialog, which ->
+            .setNegativeButton("Dismiss") { dialog, _ ->
                 dialog.dismiss()
             }
         val dialog: AlertDialog = builder.create()
         dialog.show()
+    }
+
+    private fun showConfirmExitDialog() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder
+            .setTitle("Warning!")
+            .setMessage("Are you sure that you want to exit? All your progress will be lost.")
+            .setPositiveButton("Exit") { _, _ ->
+                finish()
+            }
+            .setNegativeButton("Dismiss") { dialog, _ ->
+                dialog.dismiss()
+            }
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
+
+    private fun clearIngredients() {
+        ingredientsList.clear()
+        ingredientsList.add(IngredientClass("", ""))
+        binding.rvIngredients.adapter?.notifyDataSetChanged()
     }
 }
