@@ -42,7 +42,6 @@ class HomeListAdapter(
 
     override fun onBindViewHolder(holder: HomeListViewHolder, position: Int) {
 
-        val currentItem = homeItemsList[position]
         holder.text.text = homeItemsList[position].text
         holder.image.setImageResource(homeItemsList[position].image)
     }

@@ -3,6 +3,8 @@
     <style name="Base.Theme.MyRecipes" parent="Theme.Material3.DayNight">
         <!-- Customize your light theme here. -->
         <item name="colorPrimary">@color/raspberry</item>
+        <item name="android:statusBarColor">@color/dark_beige</item>
+
     </style>
 
     <style name="Theme.MyRecipes.Home" parent="Base.Theme.MyRecipes">

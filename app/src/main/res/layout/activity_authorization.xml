@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/beige_background"
+    android:orientation="vertical"
+    tools:context=".authorization.AuthorizationActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/chef"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:minWidth="1dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="12dp"
+            android:backgroundTint="@color/dark_beige"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/baseline_arrow_back_24"
+            android:drawableTint="@color/beige_background"/>
+
+    </FrameLayout>
+
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_host_fragment_container"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/my_nav"
+        tools:layout="@layout/fragment_register"/>
+
+
+</LinearLayout>
