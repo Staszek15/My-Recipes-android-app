@@ -5,11 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.commit
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.button.MaterialButton
 import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.FragmentWelcomeBinding
 
@@ -32,6 +29,7 @@ class WelcomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        requireActivity().findViewById<MaterialButton>(R.id.button_back).visibility = View.INVISIBLE
         handleClickListeners()
     }
 

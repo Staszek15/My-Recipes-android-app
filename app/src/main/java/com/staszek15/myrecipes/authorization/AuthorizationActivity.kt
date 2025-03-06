@@ -21,6 +21,10 @@ class AuthorizationActivity : AppCompatActivity() {
         binding = ActivityAuthorizationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        handleClickListeners()
+    }
 
+    private fun handleClickListeners() {
+        binding.buttonBack.setOnClickListener { findNavController(R.id.nav_host_fragment_container).navigateUp() }
     }
 }
