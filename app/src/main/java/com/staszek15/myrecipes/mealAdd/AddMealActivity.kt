@@ -27,6 +27,7 @@ import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.ActivityAddMealBinding
 import com.staszek15.myrecipes.mealDB.MealDatabase
 import com.staszek15.myrecipes.mealDB.MealItemClass
+import com.staszek15.myrecipes.validatorAddMeal
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
@@ -76,6 +77,7 @@ class AddMealActivity : AppCompatActivity() {
                 onBackPressedDispatcher.onBackPressed()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -95,40 +97,46 @@ class AddMealActivity : AppCompatActivity() {
 
         // button add meal
         binding.buttonAdd.setOnClickListener {
+            if (validatorAddMeal(
+                    binding.editTextTitle,
+                    binding.editTextDescription,
+                    binding.editTextRecipe
+                )
+            ) {
+                ingredientsList =
+                    ingredientsList.filter { it.amount.isNotEmpty() || it.ingredient.isNotEmpty() }
+                        .toMutableList()
 
-            ingredientsList =
-                ingredientsList.filter { it.amount.isNotEmpty() || it.ingredient.isNotEmpty() }
-                    .toMutableList()
+                //Log.i("ingredient tag", ingredientsList.toString())
+                //Log.i("ingredient tag", Json.encodeToString(ingredientsList))
 
-            //Log.i("ingredient tag", ingredientsList.toString())
-            //Log.i("ingredient tag", Json.encodeToString(ingredientsList))
+                val newMeal = MealItemClass(
+                    type = binding.dropdownType.text.toString(),
+                    title = binding.editTextTitle.text.toString(),
+                    description = binding.editTextDescription.text.toString(),
+                    recipe = binding.editTextRecipe.text.toString(),
+                    ingredients = Json.encodeToString(ingredientsList),
+                    image = binding.imageViewAdd.drawToBitmap(),
+                    rating = binding.ratingBar.rating,
+                    favourite = false
+                )
+                // TODO: coroutines here & uncomment create
+                val database = MealDatabase.getMealDatabase(this)
+                val mealDao = database.getMealDao()
 
-            val newMeal = MealItemClass(
-                type = binding.dropdownType.text.toString(),
-                title = binding.editTextTitle.text.toString(),
-                description = binding.editTextDescription.text.toString(),
-                recipe = binding.editTextRecipe.text.toString(),
-                ingredients = Json.encodeToString(ingredientsList),
-                image = binding.imageViewAdd.drawToBitmap(),
-                rating = binding.ratingBar.rating,
-                favourite = false
-            )
-            // TODO: coroutines here & uncomment create
-            val database = MealDatabase.getMealDatabase(this)
-            val mealDao = database.getMealDao()
+                lifecycleScope.launch(Dispatchers.IO) {
+                    //mealDao.createMeal(newMeal)
+                }
+                Snackbar.make(
+                    binding.root,
+                    "Your recipe for ${newMeal.title} has been added to the ${newMeal.type}s list. Enjoy!",
+                    Snackbar.LENGTH_INDEFINITE
+                )
+                    .setAction("OK") { }
+                    .show()
 
-            lifecycleScope.launch(Dispatchers.IO) {
-                //mealDao.createMeal(newMeal)
+                clearTextFields()
             }
-            Snackbar.make(
-                binding.root,
-                "Your recipe for ${newMeal.title} has been added to the ${newMeal.type}s list. Enjoy!",
-                Snackbar.LENGTH_INDEFINITE
-            )
-                .setAction("OK") { }
-                .show()
-
-            clearTextFields()
         }
     }
 

@@ -54,3 +54,26 @@ fun validatorRemindPassword(etEmail: TextInputEditText): Boolean {
     )
     return isEmailValid
 }
+
+
+fun validatorAddMeal(etTitle: TextInputEditText, etDescription: TextInputEditText, etRecipe: TextInputEditText): Boolean {
+    val isTitle = etTitle.validateRule(
+        rules = listOf(
+            EmptyTextRule(),
+            EmailTextRule()
+        )
+    )
+    val isDescription = etDescription.validateRule(
+        rules = listOf(
+            EmptyTextRule(),
+            EmailTextRule()
+        )
+    )
+    val isRecipe = etRecipe.validateRule(
+        rules = listOf(
+            EmptyTextRule(),
+            EmailTextRule()
+        )
+    )
+    return isTitle && isDescription && isRecipe
+}
