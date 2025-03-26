@@ -15,7 +15,7 @@
         android:hint="Email"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toStartOf="@id/password_layout"
+        app:layout_constraintBottom_toTopOf="@id/password_layout"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginHorizontal="44dp"
         android:layout_marginTop="12dp">

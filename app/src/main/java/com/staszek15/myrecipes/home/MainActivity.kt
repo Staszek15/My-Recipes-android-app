@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.window.OnBackInvokedDispatcher
+import androidx.activity.OnBackPressedCallback
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.staszek15.myrecipes.AccountActivity
 import com.staszek15.myrecipes.mealList.MealListActivity
@@ -24,7 +26,14 @@ class MainActivity : AppCompatActivity(), HomeListAdapter.RecyclerViewEvent {
 
         displayRecyclerView()
         setUpClickListeners()
+
+        // TODO: uncomment on back pressed
+//        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+//            // leave blank to block back arrow
+//            override fun handleOnBackPressed() {}
+//        })
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater
@@ -38,13 +47,15 @@ class MainActivity : AppCompatActivity(), HomeListAdapter.RecyclerViewEvent {
                 startActivity(Intent(this, AccountActivity::class.java))
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
 
     private fun displayRecyclerView() {
         //binding.homeRecyclerView.setHasFixedSize(true)
-        binding.homeRecyclerView.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        binding.homeRecyclerView.layoutManager =
+            StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         val homeAdapter = HomeListAdapter(homeList, this)
         binding.homeRecyclerView.adapter = homeAdapter
     }
@@ -56,7 +67,7 @@ class MainActivity : AppCompatActivity(), HomeListAdapter.RecyclerViewEvent {
         startActivity(intent)
     }
 
-    private fun createHomeList() : List<HomeItemClass> = buildList {
+    private fun createHomeList(): List<HomeItemClass> = buildList {
         add(HomeItemClass("Dinners", R.drawable.dinner))
         add(HomeItemClass("Breakfasts", R.drawable.breakfast))
         add(HomeItemClass("Desserts", R.drawable.dessert))
