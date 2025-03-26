@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "466024413319",
+    "project_id": "my-recipes-9620a",
+    "storage_bucket": "my-recipes-9620a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:466024413319:android:a6e945465eb24310f56022",
+        "android_client_info": {
+          "package_name": "com.staszek15.myrecipes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "466024413319-mbp4ud12ogfhu18uuvf4l02qes76hbht.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.staszek15.myrecipes",
+            "certificate_hash": "bf2a26e322816da58d70778b50ecfef47218b748"
+          }
+        },
+        {
+          "client_id": "466024413319-1aovp1cac84bpdb3a01jut9rqo3as4mf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCScMqCDU_v-nh0VIFWtGBH9JSgV3Cda94"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "466024413319-1aovp1cac84bpdb3a01jut9rqo3as4mf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

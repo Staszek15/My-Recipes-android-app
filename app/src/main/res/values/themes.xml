@@ -4,16 +4,18 @@
         <!-- Customize your light theme here. -->
         <item name="colorPrimary">@color/raspberry</item>
         <item name="android:statusBarColor">@color/dark_beige</item>
+        <item name="actionBarStyle">@style/StyleActionBar</item>
+        <!-- <item name="android:navigationBarColor">@color/dark_beige</item> -->
+
 
     </style>
 
     <style name="Theme.MyRecipes.Home" parent="Base.Theme.MyRecipes">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="actionBarTheme">@null</item>
     </style>
 
-    <style name="Theme.MyRecipes.Rest" parent="Base.Theme.MyRecipes"/>
+    <style name="Theme.MyRecipes.Rest" parent="Base.Theme.MyRecipes" />
 
 
     <style name="ShapeAppearanceOverlay.RoundedCorner" parent="">
@@ -21,5 +23,16 @@
         <item name="cornerFamilyTopRight">rounded</item>
         <item name="cornerSizeBottomLeft">200dp</item>
         <item name="cornerFamilyBottomLeft">rounded</item>
+    </style>
+
+
+    <!-- Action bar styles -->
+    <style name="StyleActionBar" parent="@style/Widget.AppCompat.ActionBar.Solid">
+        <item name="background">@color/beige_background</item>
+        <item name="titleTextStyle">@style/BlackActionBarTitleTextStyle</item>
+    </style>
+
+    <style name="BlackActionBarTitleTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@android:color/black</item>
     </style>
 </resources>

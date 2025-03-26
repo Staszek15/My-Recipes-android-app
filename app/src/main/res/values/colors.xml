@@ -2,18 +2,21 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="raspberry">#EB0165</color>
-    <color name="raspberry_disabled">#4DC3678E</color>
+
+    <color name="dark_text_color">#3C3838</color>
 
     <color name="beige_background">#F5E7CF</color>
     <color name="dark_beige">#875E3E</color>
 
+    <color name="raspberry">#EB0165</color>
+    <color name="raspberry_disabled">#4DC3678E</color>
     <color name="pastel_pink">#ffe3ed</color>
 
     <color name="purple_dark">#401A3B</color>
     <color name="background">#EBCCAA</color>
 
     <!--
+
       <color name="beige_background">#f2d8bd</color>
       <color name="beige_background">#FFEEDF</color>
       <color name="dark_beige">#8C6A4F</color>

@@ -11,7 +11,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.ActivityDetailsBinding
-import com.staszek15.myrecipes.mealAdd.AddIngredientAdapter
 import com.staszek15.myrecipes.mealAdd.AddMealActivity
 import com.staszek15.myrecipes.mealAdd.IngredientClass
 import com.staszek15.myrecipes.mealDB.MealDatabase
@@ -19,7 +18,6 @@ import com.staszek15.myrecipes.mealDB.MealItemClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class DetailsActivity : AppCompatActivity() {
@@ -69,7 +67,7 @@ class DetailsActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.menu_toolbar, menu)
+        inflater.inflate(R.menu.menu_action_bar_meal_details, menu)
         return true
     }
 

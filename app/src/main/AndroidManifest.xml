@@ -13,12 +13,19 @@
         android:theme="@style/Theme.MyRecipes.Home"
         tools:targetApi="31">
         <activity
-            android:name=".authorization.AuthorizationActivity"
+            android:name=".AccountActivity"
+            android:exported="false"
+            android:label="Account"
+            android:parentActivityName=".home.MainActivity"
             android:screenOrientation="nosensor"
-            android:exported="true">
+            android:theme="@style/Theme.MyRecipes.Rest"
+            />
+        <activity
+            android:name=".authorization.AuthorizationActivity"
+            android:exported="true"
+            android:screenOrientation="nosensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -47,9 +54,8 @@
         <activity
             android:name=".home.MainActivity"
             android:exported="false"
-            android:screenOrientation="nosensor">
-
-        </activity>
+            android:screenOrientation="nosensor"
+            android:theme="@style/Theme.MyRecipes.Rest" />
     </application>
 
 </manifest>

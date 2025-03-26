@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:stateListAnimator="@null">
+    android:stateListAnimator="@null"
+    android:background="@color/beige_background">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/meals_recycler_view"

@@ -74,8 +74,31 @@
         android:layout_marginStart="44dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="44dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="8dp"
         android:text="@string/create_acc"
         android:textSize="16sp" />
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/or" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/google_register"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="44dp"
+        android:layout_marginBottom="24dp"
+        android:text="Register with Google"
+        android:textSize="16sp"
+        app:icon="@drawable/icon_google"
+        app:iconGravity="textStart"
+        app:iconPadding="16dp"
+        app:iconSize="24sp"
+        app:iconTintMode="multiply" />
 
 </LinearLayout>

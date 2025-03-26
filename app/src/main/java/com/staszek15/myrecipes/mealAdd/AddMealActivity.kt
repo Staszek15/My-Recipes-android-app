@@ -23,6 +23,9 @@ import androidx.core.view.drawToBitmap
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.ActivityAddMealBinding
 import com.staszek15.myrecipes.mealDB.MealDatabase
@@ -48,10 +51,8 @@ class AddMealActivity : AppCompatActivity() {
         setupDropdownMenu(mealType)
         handleImageSelection()
         setupIngredientRecyclerView(ingredientsList)
-        handleClickListeners()
+        handleClickListeners(mealType)
         overrideBackNavigation()
-
-
     }
 
 
@@ -83,7 +84,7 @@ class AddMealActivity : AppCompatActivity() {
     }
 
 
-    private fun handleClickListeners() {
+    private fun handleClickListeners(mealType: String) {
 
         // button add ingredient
         binding.ButtonAddIngredient.setOnClickListener {
@@ -110,32 +111,49 @@ class AddMealActivity : AppCompatActivity() {
                 //Log.i("ingredient tag", ingredientsList.toString())
                 //Log.i("ingredient tag", Json.encodeToString(ingredientsList))
 
-                val newMeal = MealItemClass(
-                    type = binding.dropdownType.text.toString(),
-                    title = binding.editTextTitle.text.toString(),
-                    description = binding.editTextDescription.text.toString(),
-                    recipe = binding.editTextRecipe.text.toString(),
-                    ingredients = Json.encodeToString(ingredientsList),
-                    image = binding.imageViewAdd.drawToBitmap(),
-                    rating = binding.ratingBar.rating,
-                    favourite = false
-                )
+//                val newMeal = MealItemClass(
+//                    type = binding.dropdownType.text.toString(),
+//                    title = binding.editTextTitle.text.toString(),
+//                    description = binding.editTextDescription.text.toString(),
+//                    recipe = binding.editTextRecipe.text.toString(),
+//                    ingredients = Json.encodeToString(ingredientsList),
+//                    image = binding.imageViewAdd.drawToBitmap(),
+//                    rating = binding.ratingBar.rating,
+//                    favourite = false
+//                )
                 // TODO: coroutines here & uncomment create
-                val database = MealDatabase.getMealDatabase(this)
-                val mealDao = database.getMealDao()
+                //val database = MealDatabase.getMealDatabase(this)
+                //val mealDao = database.getMealDao()
 
-                lifecycleScope.launch(Dispatchers.IO) {
-                    //mealDao.createMeal(newMeal)
-                }
-                Snackbar.make(
-                    binding.root,
-                    "Your recipe for ${newMeal.title} has been added to the ${newMeal.type}s list. Enjoy!",
-                    Snackbar.LENGTH_INDEFINITE
+                //lifecycleScope.launch(Dispatchers.IO) {
+                //mealDao.createMeal(newMeal)
+                //}
+                // TODO: image
+                val newMeal = hashMapOf(
+                    "type" to binding.dropdownType.text.toString(),
+                    "title" to binding.editTextTitle.text.toString(),
+                    "description" to binding.editTextDescription.text.toString(),
+                    "recipe" to binding.editTextRecipe.text.toString(),
+                    "ingredients" to Json.encodeToString(ingredientsList),
+                    //"image" to binding.imageViewAdd.drawToBitmap(),
+                    "rating" to binding.ratingBar.rating,
+                    "favourite" to binding.favSwitch.isChecked
                 )
-                    .setAction("OK") { }
-                    .show()
+                Firebase.firestore.collection(mealType)
+                    .add(newMeal)
+                    .addOnSuccessListener {
+                        Snackbar
+                            .make(
+                                binding.root,
+                                "Your recipe for ${newMeal.getValue("title")} has been added to the $mealType list. Enjoy!",
+                                Snackbar.LENGTH_INDEFINITE
+                            )
+                            .setAction("OK") { }
+                            .show()
 
-                clearTextFields()
+                        clearTextFields()
+                    }
+                    .addOnFailureListener { Firebase.analytics.logEvent("failure_add_recipe", null) }
             }
         }
     }

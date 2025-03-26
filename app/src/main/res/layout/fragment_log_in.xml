@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context=".authorization.LogInFragment">
 
@@ -28,13 +28,13 @@
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/ThemeOverlay.Material3.TextInputEditText.OutlinedBox"
-        app:passwordToggleEnabled="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="44dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="44dp"
-        android:hint="Password">
+        android:hint="Password"
+        app:passwordToggleEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_password"
@@ -62,13 +62,36 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="44dp"
-        app:strokeColor="@color/raspberry"
-        app:strokeWidth="1dp"
-        android:backgroundTint="@color/raspberry_disabled"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="44dp"
+        android:layout_marginBottom="8dp"
+        android:backgroundTint="@color/raspberry_disabled"
         android:text="@string/remind_password"
         android:textSize="16sp"
-        android:layout_marginBottom="24dp"/>
+        app:strokeColor="@color/raspberry"
+        app:strokeWidth="1dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/or" />
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/google_log_in"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="44dp"
+        android:layout_marginBottom="24dp"
+        android:text="Log in with Google"
+        android:textSize="16sp"
+        app:icon="@drawable/icon_google"
+        app:iconGravity="textStart"
+        app:iconPadding="16dp"
+        app:iconSize="24sp"
+        app:iconTintMode="multiply" />
 
 </LinearLayout>

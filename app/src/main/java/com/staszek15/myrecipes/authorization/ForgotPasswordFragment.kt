@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import com.staszek15.myrecipes.EmailTextRule
 import com.staszek15.myrecipes.EmptyTextRule
 import com.staszek15.myrecipes.databinding.FragmentForgotPasswordBinding
@@ -32,7 +34,9 @@ class ForgotPasswordFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.remindPass.setOnClickListener {
-            if (validatorRemindPassword(binding.etEmail)) {}
+            if (validatorRemindPassword(binding.etEmail)) {
+                Firebase.analytics.logEvent("remind_password_event", null)
+            }
         }
     }
 

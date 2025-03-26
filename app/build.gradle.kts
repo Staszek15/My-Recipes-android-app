@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
     id("org.jetbrains.kotlin.plugin.serialization")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -46,6 +47,12 @@ dependencies {
     //room
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.activity:activity:1.9.1")
+    implementation("com.google.firebase:firebase-auth:23.2.0")
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+    implementation("com.google.firebase:firebase-analytics:22.3.0")
+    implementation("com.google.firebase:firebase-firestore:25.1.2")
     annotationProcessor("androidx.room:room-compiler:2.6.1")
     // To use Kotlin Symbol Processing (KSP)
     ksp("androidx.room:room-compiler:2.6.1")
