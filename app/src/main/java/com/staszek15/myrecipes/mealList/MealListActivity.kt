@@ -3,10 +3,13 @@ package com.staszek15.myrecipes.mealList
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.staszek15.myrecipes.mealDB.MealDatabase
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.staszek15.myrecipes.mealDB.MealItemClass
 import com.staszek15.myrecipes.mealAdd.AddMealActivity
 import com.staszek15.myrecipes.mealDetails.DetailsActivity
@@ -18,7 +21,7 @@ import kotlinx.coroutines.withContext
 class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent {
 
     private lateinit var binding: ActivityMealListBinding
-    private lateinit var mealList: List<MealItemClass>
+    private lateinit var mealList: MutableList<Pair<MealItemClass, String>>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,25 +32,29 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
         this.title = mealType
         mealType = mealType.dropLast(1)   // delete 's' to match type in database
 
-        setupDatabase(mealType)
+        setupFirestore(mealType)
         handleClickListeners(mealType)
     }
 
-
-    private fun setupDatabase(mealType: String) {
-        val database = MealDatabase.getMealDatabase(this)
-        val mealDao = database.getMealDao()
-        lifecycleScope.launch(Dispatchers.IO) {
-            mealList = if (mealType == "Favourite") {
-                mealDao.getFavMeals()
-            } else {
-                mealDao.getTypeMeals(mealType)
+    private fun setupFirestore(mealType: String) {
+        val userId = Firebase.auth.currentUser!!.uid
+        Firebase.firestore.collection("Recipes/$mealType/$userId")
+            .get()
+            .addOnSuccessListener { result ->
+                lifecycleScope.launch(Dispatchers.IO) {
+                    mealList = result.mapNotNull { document ->
+                        Pair<MealItemClass, String>(document.toObject(MealItemClass::class.java), document.id)
+                    }.toMutableList()
+                    withContext(Dispatchers.Main) { displayRecyclerView(mealList) }
+                }
             }
-            withContext(Dispatchers.Main) { displayRecyclerView(mealList) } // also displaying recycler view
-        }
+            .addOnFailureListener { e ->
+                Log.e("Firestore", "Error getting documents: ", e)
+            }
     }
 
-    private fun displayRecyclerView(list: List<MealItemClass>) {
+
+    private fun displayRecyclerView(list: List<Pair<MealItemClass,String>>) {
         val adapter = MealListAdapter(list, this)
         binding.mealsRecyclerView.setHasFixedSize(true)
         binding.mealsRecyclerView.layoutManager = LinearLayoutManager(applicationContext)
@@ -55,7 +62,6 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
     }
 
     private fun handleClickListeners(mealType: String) {
-
         // fab invisible in favourites list
         if (mealType == "Favourite") {
             binding.fab.visibility = View.INVISIBLE
@@ -70,9 +76,11 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
 
     // override function from interface in adapter file
     override fun myOnItemClick(position: Int) {
-        val clickedItem = mealList[position]
+        val clickedMeal: MealItemClass = mealList[position].first
+        val clickedDocumentId : String = mealList[position].second
         val intent = Intent(this, DetailsActivity::class.java)
-        intent.putExtra("clicked_item_id", clickedItem.mealId)
+        intent.putExtra("clicked_meal", clickedMeal)
+        intent.putExtra("clicked_document_id", clickedDocumentId)
         startActivity(intent)
     }
 

@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.PorterDuff
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -19,17 +20,17 @@ import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.drawToBitmap
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
 import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.ActivityAddMealBinding
-import com.staszek15.myrecipes.mealDB.MealDatabase
-import com.staszek15.myrecipes.mealDB.MealItemClass
 import com.staszek15.myrecipes.validatorAddMeal
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,6 +41,8 @@ class AddMealActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddMealBinding
     private var ingredientsList = mutableListOf(IngredientClass("", ""))
+    private lateinit var storageRef: StorageReference
+    private var uri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +56,8 @@ class AddMealActivity : AppCompatActivity() {
         setupIngredientRecyclerView(ingredientsList)
         handleClickListeners(mealType)
         overrideBackNavigation()
+
+        storageRef = Firebase.storage.reference
     }
 
 
@@ -78,7 +83,6 @@ class AddMealActivity : AppCompatActivity() {
                 onBackPressedDispatcher.onBackPressed()
                 true
             }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -104,56 +108,56 @@ class AddMealActivity : AppCompatActivity() {
                     binding.editTextRecipe
                 )
             ) {
-                ingredientsList =
-                    ingredientsList.filter { it.amount.isNotEmpty() || it.ingredient.isNotEmpty() }
-                        .toMutableList()
+                uri?.let { uri ->
+                    val userId = Firebase.auth.currentUser!!.uid
+                    val timestamp = System.currentTimeMillis()
+                    storageRef.child("Recipes/$mealType/$userId/$timestamp.jpg").putFile(uri)
 
-                //Log.i("ingredient tag", ingredientsList.toString())
-                //Log.i("ingredient tag", Json.encodeToString(ingredientsList))
+                        .addOnSuccessListener { task ->
+                            task.metadata!!.reference!!.downloadUrl
+                                .addOnSuccessListener { url ->
+                                    val imageUrl = url.toString()
 
-//                val newMeal = MealItemClass(
-//                    type = binding.dropdownType.text.toString(),
-//                    title = binding.editTextTitle.text.toString(),
-//                    description = binding.editTextDescription.text.toString(),
-//                    recipe = binding.editTextRecipe.text.toString(),
-//                    ingredients = Json.encodeToString(ingredientsList),
-//                    image = binding.imageViewAdd.drawToBitmap(),
-//                    rating = binding.ratingBar.rating,
-//                    favourite = false
-//                )
-                // TODO: coroutines here & uncomment create
-                //val database = MealDatabase.getMealDatabase(this)
-                //val mealDao = database.getMealDao()
+                                    ingredientsList =
+                                        ingredientsList.filter { it.amount.isNotEmpty() || it.ingredient.isNotEmpty() }
+                                            .toMutableList()
 
-                //lifecycleScope.launch(Dispatchers.IO) {
-                //mealDao.createMeal(newMeal)
-                //}
-                // TODO: image
-                val newMeal = hashMapOf(
-                    "type" to binding.dropdownType.text.toString(),
-                    "title" to binding.editTextTitle.text.toString(),
-                    "description" to binding.editTextDescription.text.toString(),
-                    "recipe" to binding.editTextRecipe.text.toString(),
-                    "ingredients" to Json.encodeToString(ingredientsList),
-                    //"image" to binding.imageViewAdd.drawToBitmap(),
-                    "rating" to binding.ratingBar.rating,
-                    "favourite" to binding.favSwitch.isChecked
-                )
-                Firebase.firestore.collection(mealType)
-                    .add(newMeal)
-                    .addOnSuccessListener {
-                        Snackbar
-                            .make(
-                                binding.root,
-                                "Your recipe for ${newMeal.getValue("title")} has been added to the $mealType list. Enjoy!",
-                                Snackbar.LENGTH_INDEFINITE
-                            )
-                            .setAction("OK") { }
-                            .show()
+                                    // TODO: image
+                                    val newMeal = hashMapOf(
+                                        "type" to binding.dropdownType.text.toString(),
+                                        "title" to binding.editTextTitle.text.toString(),
+                                        "description" to binding.editTextDescription.text.toString(),
+                                        "recipe" to binding.editTextRecipe.text.toString(),
+                                        "ingredients" to Json.encodeToString(ingredientsList),
+                                        "imageUrl" to imageUrl,
+                                        "rating" to binding.ratingBar.rating,
+                                        "favourite" to binding.favSwitch.isChecked
+                                    )
 
-                        clearTextFields()
-                    }
-                    .addOnFailureListener { Firebase.analytics.logEvent("failure_add_recipe", null) }
+                                    Firebase.firestore.collection("Recipes/$mealType/$userId")
+                                        .add(newMeal)
+                                        .addOnSuccessListener {
+                                            Snackbar
+                                                .make(
+                                                    binding.root,
+                                                    "Your recipe for ${newMeal.getValue("title")} has been added to the $mealType list. Enjoy!",
+                                                    Snackbar.LENGTH_INDEFINITE
+                                                )
+                                                .setAction("OK") { }
+                                                .show()
+
+                                            clearTextFields()
+                                        }
+                                        .addOnFailureListener {
+                                            Firebase.analytics.logEvent(
+                                                "failure_add_recipe",
+                                                null
+                                            )
+                                        }
+                                }
+                        }
+                }
+
             }
         }
     }
@@ -165,6 +169,7 @@ class AddMealActivity : AppCompatActivity() {
         binding.editTextDescription.text?.clear()
         binding.editTextRecipe.text?.clear()
         binding.ratingBar.rating = 0F
+        binding.favSwitch.isChecked = false
 
         //don't know how to change background tint
         binding.imageViewAdd.setBackgroundResource(R.drawable.dinner)
@@ -182,23 +187,17 @@ class AddMealActivity : AppCompatActivity() {
 
 
     private fun handleImageSelection() {
-        val viewImage = binding.imageViewAdd
-
-        val changeImage =
-            registerForActivityResult(
-                ActivityResultContracts.StartActivityForResult()
-            ) {
-                if (it.resultCode == Activity.RESULT_OK) {
-                    val data = it.data
-                    val imgUri = data?.data
-                    viewImage.scaleType = ImageView.ScaleType.CENTER_CROP   //set scale type
-                    viewImage.setImageURI(imgUri)
+        val pickImage =
+            registerForActivityResult(ActivityResultContracts.GetContent()) {
+                if (it != null) {
+                    uri = it
+                    binding.imageViewAdd.setImageURI(uri)
+                    binding.imageViewAdd.scaleType =
+                        ImageView.ScaleType.CENTER_CROP   //set scale type
                 }
             }
         binding.cardViewImageAdd.setOnClickListener {
-            val intentSelectImage =
-                Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-            changeImage.launch(intentSelectImage)
+            pickImage.launch("image/*")
         }
     }
 

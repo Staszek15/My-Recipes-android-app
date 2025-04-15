@@ -3,17 +3,18 @@ package com.staszek15.myrecipes.mealDetails
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.ActivityDetailsBinding
 import com.staszek15.myrecipes.mealAdd.AddMealActivity
 import com.staszek15.myrecipes.mealAdd.IngredientClass
-import com.staszek15.myrecipes.mealDB.MealDatabase
 import com.staszek15.myrecipes.mealDB.MealItemClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,22 +24,19 @@ import kotlinx.serialization.json.Json
 class DetailsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailsBinding
+    private lateinit var clickedDocumentId: String
+    private lateinit var clickedMeal: MealItemClass
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val intentItemId = intent.getIntExtra("clicked_item_id", -1)  // non null
-
-        val database = MealDatabase.getMealDatabase(this)
-        val mealDao = database.getMealDao()
-
         lifecycleScope.launch(Dispatchers.IO) {
-            val intentMeal = mealDao.getExactMeal(intentItemId)
-
+            clickedDocumentId = intent.getStringExtra("clicked_document_id")!!  // non null
+            clickedMeal = intent.getParcelableExtra<MealItemClass>("clicked_meal")!!
             withContext(Dispatchers.Main) {
-                prepopulateFields(intentMeal)
+                prepopulateFields()
             }
         }
     }
@@ -49,19 +47,14 @@ class DetailsActivity : AppCompatActivity() {
         binding.rvIngredients.layoutManager = LinearLayoutManager(applicationContext)
     }
 
-    private fun prepopulateFields(intentMeal: MealItemClass) {
-        //val ing = mutableListOf(IngredientClass(amount="6", ingredient="apples"), IngredientClass(amount="3", ingredient="eggs"), IngredientClass(amount="2", ingredient="carrots"), IngredientClass(amount="100ml", ingredient="milk"), IngredientClass(amount="1 table spoon", ingredient="water"), IngredientClass(amount="12", ingredient="strawberries"), IngredientClass(amount="80g", ingredient="flour"), IngredientClass(amount="50g", ingredient="cheese"))
-        //val ingg = Json.encodeToString(ing)
-        //println(ingg)
-        val ing =
-            "[{\"amount\":\"6\",\"ingredient\":\"apples\"},{\"amount\":\"3\",\"ingredient\":\"eggs\"},{\"amount\":\"2\",\"ingredient\":\"carrots\"},{\"amount\":\"100ml\",\"ingredient\":\"milk\"},{\"amount\":\"1 table spoon\",\"ingredient\":\"water\"},{\"amount\":\"12\",\"ingredient\":\"strawberries\"},{\"amount\":\"80g\",\"ingredient\":\"flour\"},{\"amount\":\"50g\",\"ingredient\":\"cheese\"}]"
+    private fun prepopulateFields() {
         val ingredientsList =
-            Json.decodeFromString<MutableList<IngredientClass>>(ing)
+            Json.decodeFromString<MutableList<IngredientClass>>(clickedMeal.ingredients.toString())
         setupIngredientRecyclerView(ingredientsList)
 
-        binding.ivMeal.setImageBitmap(intentMeal.image)
-        binding.tvTitle.text = intentMeal.title
-        binding.tvRecipe.text = intentMeal.recipe
+        Glide.with(this).load(clickedMeal.imageUrl).into(binding.ivMeal)
+        binding.tvTitle.text = clickedMeal.title
+        binding.tvRecipe.text = clickedMeal.recipe
     }
 
 
@@ -114,6 +107,7 @@ class DetailsActivity : AppCompatActivity() {
             .setMessage("Do you want to edit this record?")
             .setPositiveButton("Yes") { _, _ ->
                 val intent = Intent(this, AddMealActivity::class.java)
+                intent.putExtra(clickedDocumentId, clickedDocumentId)
                 startActivity(intent)
             }
             .setNegativeButton("No") { dialog, _ ->

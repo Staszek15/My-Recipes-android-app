@@ -20,6 +20,7 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -62,7 +63,14 @@ class RegisterFragment : Fragment() {
                 )
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            // Sign in success, update UI with the signed-in user's information
+                            val snackbar = Snackbar.make(
+                                binding.root,
+                                "Your account has been created. Please log in with your credentials.",
+                                Snackbar.LENGTH_LONG
+                            )
+                            snackbar
+                                .setAction("OK") { snackbar.dismiss() }
+                                .show()
                             findNavController().navigate(R.id.action_registerFragment_to_LogInFragment)
                         } else {
                             Log.w(TAG, "createUserWithEmail:failure", task.exception)

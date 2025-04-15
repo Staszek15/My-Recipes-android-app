@@ -31,18 +31,20 @@ class AccountActivity : AppCompatActivity() {
             Firebase.auth.signOut()
             startActivity(Intent(this, AuthorizationActivity::class.java))
         }
-
-        binding.btnDeleteAccount.setOnClickListener {
-            showDeleteDialog()
+        binding.btnSignOut.setOnClickListener {
+            showDeleteDialog("Do you want to sign out?", "Failed to sign out. Try again later.")
         }
+        binding.btnDeleteAccount.setOnClickListener {
+            showDeleteDialog("Do you want to delete this account?", "Failed to delete your account. Try again later.")
+        }
+
     }
 
-
-    private fun showDeleteDialog() {
+    private fun showDeleteDialog(dialogMessage: String, snackbarMessage: String) {
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
         builder
             .setTitle("Warning!")
-            .setMessage("Do you want to delete this account?")
+            .setMessage(dialogMessage)
             .setPositiveButton("Yes") { _, _ ->
                 Firebase.auth.currentUser!!.delete()
                     .addOnSuccessListener {
@@ -51,7 +53,7 @@ class AccountActivity : AppCompatActivity() {
                     .addOnFailureListener {
                         val snackbar = Snackbar.make(
                             binding.root,
-                            "Failed to delete your account. Try again later.",
+                            snackbarMessage,
                             Snackbar.LENGTH_LONG
                         )
                         snackbar

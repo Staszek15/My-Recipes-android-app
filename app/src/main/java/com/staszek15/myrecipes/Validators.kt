@@ -60,19 +60,16 @@ fun validatorAddMeal(etTitle: TextInputEditText, etDescription: TextInputEditTex
     val isTitle = etTitle.validateRule(
         rules = listOf(
             EmptyTextRule(),
-            EmailTextRule()
         )
     )
     val isDescription = etDescription.validateRule(
         rules = listOf(
-            EmptyTextRule(),
-            EmailTextRule()
+            EmptyTextRule()
         )
     )
     val isRecipe = etRecipe.validateRule(
         rules = listOf(
-            EmptyTextRule(),
-            EmailTextRule()
+            EmptyTextRule()
         )
     )
     return isTitle && isDescription && isRecipe

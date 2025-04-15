@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.staszek15.myrecipes.Converters
 
-@Database(entities = [MealItemClass::class], version = 4)
+@Database(entities = [MealItemClass::class], version = 5)
 @TypeConverters(Converters::class)
 abstract class MealDatabase : RoomDatabase() {
 

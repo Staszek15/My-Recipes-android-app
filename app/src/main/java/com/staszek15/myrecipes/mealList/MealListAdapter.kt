@@ -4,11 +4,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.mealDB.MealItemClass
 import com.staszek15.myrecipes.databinding.MealListItemBinding
 
 class MealListAdapter(
-    private val mealItemsList: List<MealItemClass>,
+    private val mealItemsList: List<Pair<MealItemClass,String>>,
     private val listener: RecyclerViewEvent
 ):
     RecyclerView.Adapter<MealListAdapter.MealListViewHolder>(){
@@ -44,13 +45,14 @@ class MealListAdapter(
     }
 
     override fun onBindViewHolder(holder: MealListViewHolder, position: Int) {
-        holder.heading.text = mealItemsList[position].title
-        holder.description.text = mealItemsList[position].description
-        holder.rating.rating = mealItemsList[position].rating
-        holder.image.setImageBitmap(mealItemsList[position].image)
+        holder.heading.text = mealItemsList[position].first.title
+        holder.description.text = mealItemsList[position].first.description
+        holder.rating.rating = mealItemsList[position].first.rating
+        // TODO: set image
+        holder.image.setImageResource(R.drawable.dinner)
 
         // favorite label visible only for favorite records
-        if (mealItemsList[position].favourite) {
+        if (mealItemsList[position].first.favourite) {
             holder.favLabel.visibility = View.VISIBLE
         }
     }
