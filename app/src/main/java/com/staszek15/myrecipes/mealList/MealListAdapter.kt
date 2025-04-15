@@ -4,17 +4,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.mealDB.MealItemClass
 import com.staszek15.myrecipes.databinding.MealListItemBinding
 
 class MealListAdapter(
-    private val mealItemsList: List<Pair<MealItemClass,String>>,
+    private val mealItemsList: List<Pair<MealItemClass, String?>>,
     private val listener: RecyclerViewEvent
-):
-    RecyclerView.Adapter<MealListAdapter.MealListViewHolder>(){
+) :
+    RecyclerView.Adapter<MealListAdapter.MealListViewHolder>() {
 
-    inner class MealListViewHolder(binding: MealListItemBinding):
+    inner class MealListViewHolder(binding: MealListItemBinding) :
         RecyclerView.ViewHolder(binding.root), View.OnClickListener {
         val heading = binding.textViewHeading
         val description = binding.textViewDescription
@@ -48,9 +49,27 @@ class MealListAdapter(
         holder.heading.text = mealItemsList[position].first.title
         holder.description.text = mealItemsList[position].first.description
         holder.rating.rating = mealItemsList[position].first.rating
-        // TODO: set image
-        holder.image.setImageResource(R.drawable.dinner)
 
+        // if no second element of pair (Firestore document name)
+        // then it is a default meal, load its image from local db
+        // use name identifier cause DrawableRes depends on device/update
+        if (mealItemsList[position].second != null) {
+            Glide
+                .with(holder.image.context)
+                .load(mealItemsList[position].first.imageUrl)
+                .into(holder.image)
+        } else {
+            val resId = holder.image.context.resources.getIdentifier(
+                mealItemsList[position].first.drawableName,
+                "drawable",
+                holder.image.context.packageName
+            )
+            if (resId != 0) {
+                holder.image.setImageResource(resId)
+            } else {
+                holder.image.setImageResource(R.drawable.dinner)
+            }
+        }
         // favorite label visible only for favorite records
         if (mealItemsList[position].first.favourite) {
             holder.favLabel.visibility = View.VISIBLE
@@ -58,7 +77,7 @@ class MealListAdapter(
     }
 
 
-    interface RecyclerViewEvent{
+    interface RecyclerViewEvent {
         fun myOnItemClick(position: Int)
     }
 }

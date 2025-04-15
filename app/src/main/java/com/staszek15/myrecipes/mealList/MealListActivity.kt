@@ -14,6 +14,7 @@ import com.staszek15.myrecipes.mealDB.MealItemClass
 import com.staszek15.myrecipes.mealAdd.AddMealActivity
 import com.staszek15.myrecipes.mealDetails.DetailsActivity
 import com.staszek15.myrecipes.databinding.ActivityMealListBinding
+import com.staszek15.myrecipes.mealDB.MealDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -21,7 +22,7 @@ import kotlinx.coroutines.withContext
 class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent {
 
     private lateinit var binding: ActivityMealListBinding
-    private lateinit var mealList: MutableList<Pair<MealItemClass, String>>
+    private lateinit var mealList: MutableList<Pair<MealItemClass, String?>>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,10 +42,20 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
         Firebase.firestore.collection("Recipes/$mealType/$userId")
             .get()
             .addOnSuccessListener { result ->
+                val database = MealDatabase.getMealDatabase(this)
+                val mealDao = database.getMealDao()
+
                 lifecycleScope.launch(Dispatchers.IO) {
+                    val defaultMeals = mealDao.getTypeMeals(mealType)
+                        .map { meal -> Pair(meal, null as String?) }.toMutableList()
                     mealList = result.mapNotNull { document ->
-                        Pair<MealItemClass, String>(document.toObject(MealItemClass::class.java), document.id)
+                        Pair<MealItemClass, String?>(
+                            document.toObject(MealItemClass::class.java),
+                            document.id
+                        )
                     }.toMutableList()
+                    mealList.addAll(defaultMeals)
+
                     withContext(Dispatchers.Main) { displayRecyclerView(mealList) }
                 }
             }
@@ -54,7 +65,7 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
     }
 
 
-    private fun displayRecyclerView(list: List<Pair<MealItemClass,String>>) {
+    private fun displayRecyclerView(list: List<Pair<MealItemClass, String?>>) {
         val adapter = MealListAdapter(list, this)
         binding.mealsRecyclerView.setHasFixedSize(true)
         binding.mealsRecyclerView.layoutManager = LinearLayoutManager(applicationContext)
@@ -77,7 +88,7 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
     // override function from interface in adapter file
     override fun myOnItemClick(position: Int) {
         val clickedMeal: MealItemClass = mealList[position].first
-        val clickedDocumentId : String = mealList[position].second
+        val clickedDocumentId: String? = mealList[position].second
         val intent = Intent(this, DetailsActivity::class.java)
         intent.putExtra("clicked_meal", clickedMeal)
         intent.putExtra("clicked_document_id", clickedDocumentId)

@@ -15,6 +15,7 @@ data class MealItemClass(
     val ingredients: String? = "",
     val recipe: String = "",
     val imageUrl: String? = null,
+    val drawableName: String? = null,
     val rating: Float = 0f,
     val favourite: Boolean = false
 ) : Parcelable

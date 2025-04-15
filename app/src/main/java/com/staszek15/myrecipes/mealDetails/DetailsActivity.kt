@@ -52,7 +52,10 @@ class DetailsActivity : AppCompatActivity() {
             Json.decodeFromString<MutableList<IngredientClass>>(clickedMeal.ingredients.toString())
         setupIngredientRecyclerView(ingredientsList)
 
-        Glide.with(this).load(clickedMeal.imageUrl).into(binding.ivMeal)
+        Glide
+            .with(this)
+            .load(clickedMeal.imageUrl)
+            .into(binding.ivMeal)
         binding.tvTitle.text = clickedMeal.title
         binding.tvRecipe.text = clickedMeal.recipe
     }
