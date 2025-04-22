@@ -23,21 +23,24 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
 
     private lateinit var binding: ActivityMealListBinding
     private lateinit var mealList: MutableList<Pair<MealItemClass, String?>>
+    // delete 's' to match type in database
+    private val mealType by lazy {intent.getStringExtra("mealType")!!.dropLast(1)}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMealListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        var mealType: String = intent.getStringExtra("mealType")!!
-        this.title = mealType
-        mealType = mealType.dropLast(1)   // delete 's' to match type in database
-
-        setupFirestore(mealType)
-        handleClickListeners(mealType)
+        this.title = mealType + "s"
     }
 
-    private fun setupFirestore(mealType: String) {
+    override fun onResume() {
+        super.onResume()
+        setupFirestore()
+        handleClickListeners()
+    }
+
+    private fun setupFirestore() {
         val userId = Firebase.auth.currentUser!!.uid
         Firebase.firestore.collection("Recipes/$mealType/$userId")
             .get()
@@ -66,13 +69,18 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
 
 
     private fun displayRecyclerView(list: List<Pair<MealItemClass, String?>>) {
-        val adapter = MealListAdapter(list, this)
-        binding.mealsRecyclerView.setHasFixedSize(true)
-        binding.mealsRecyclerView.layoutManager = LinearLayoutManager(applicationContext)
-        binding.mealsRecyclerView.adapter = adapter
+        if (list.isEmpty()) {
+            binding.emptyListLayout.visibility = View.VISIBLE
+        } else {
+            binding.emptyListLayout.visibility = View.GONE
+            val adapter = MealListAdapter(list, this)
+            binding.mealsRecyclerView.setHasFixedSize(true)
+            binding.mealsRecyclerView.layoutManager = LinearLayoutManager(applicationContext)
+            binding.mealsRecyclerView.adapter = adapter
+        }
     }
 
-    private fun handleClickListeners(mealType: String) {
+    private fun handleClickListeners() {
         // fab invisible in favourites list
         if (mealType == "Favourite") {
             binding.fab.visibility = View.INVISIBLE
@@ -87,11 +95,9 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
 
     // override function from interface in adapter file
     override fun myOnItemClick(position: Int) {
-        val clickedMeal: MealItemClass = mealList[position].first
-        val clickedDocumentId: String? = mealList[position].second
         val intent = Intent(this, DetailsActivity::class.java)
-        intent.putExtra("clicked_meal", clickedMeal)
-        intent.putExtra("clicked_document_id", clickedDocumentId)
+        intent.putExtra("clicked_meal", mealList[position].first)
+        intent.putExtra("clicked_document", mealList[position].second as String?)
         startActivity(intent)
     }
 

@@ -57,6 +57,7 @@ class MealListAdapter(
             Glide
                 .with(holder.image.context)
                 .load(mealItemsList[position].first.imageUrl)
+                .error(R.drawable.empty_image)
                 .into(holder.image)
         } else {
             val resId = holder.image.context.resources.getIdentifier(

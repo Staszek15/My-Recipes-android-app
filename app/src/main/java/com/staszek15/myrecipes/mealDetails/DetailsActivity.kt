@@ -3,7 +3,6 @@ package com.staszek15.myrecipes.mealDetails
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -15,6 +14,7 @@ import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.ActivityDetailsBinding
 import com.staszek15.myrecipes.mealAdd.AddMealActivity
 import com.staszek15.myrecipes.mealAdd.IngredientClass
+import com.staszek15.myrecipes.mealDB.MealDatabase
 import com.staszek15.myrecipes.mealDB.MealItemClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,21 +24,15 @@ import kotlinx.serialization.json.Json
 class DetailsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailsBinding
-    private lateinit var clickedDocumentId: String
-    private lateinit var clickedMeal: MealItemClass
+    private val clickedMeal: MealItemClass by lazy { intent.getParcelableExtra<MealItemClass>("clicked_meal")!! }
+    private val clickedDocument: String? by lazy { intent.getStringExtra("clicked_document") }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            clickedDocumentId = intent.getStringExtra("clicked_document_id")!!  // non null
-            clickedMeal = intent.getParcelableExtra<MealItemClass>("clicked_meal")!!
-            withContext(Dispatchers.Main) {
-                prepopulateFields()
-            }
-        }
+        prepopulateFields()
     }
 
     private fun setupIngredientRecyclerView(ingredientsList: MutableList<IngredientClass>) {
@@ -52,12 +46,27 @@ class DetailsActivity : AppCompatActivity() {
             Json.decodeFromString<MutableList<IngredientClass>>(clickedMeal.ingredients.toString())
         setupIngredientRecyclerView(ingredientsList)
 
-        Glide
-            .with(this)
-            .load(clickedMeal.imageUrl)
-            .into(binding.ivMeal)
         binding.tvTitle.text = clickedMeal.title
         binding.tvRecipe.text = clickedMeal.recipe
+
+        if (clickedDocument != null) {
+            Glide
+                .with(this)
+                .load(clickedMeal.imageUrl)
+                .error(R.drawable.empty_image)
+                .into(binding.ivMeal)
+        } else {
+            val resId = resources.getIdentifier(
+                clickedMeal.drawableName,
+                "drawable",
+                packageName
+            )
+            if (resId != 0) {
+                binding.ivMeal.setImageResource(resId)
+            } else {
+                binding.ivMeal.setImageResource(R.drawable.dinner)
+            }
+        }
     }
 
 
@@ -90,10 +99,20 @@ class DetailsActivity : AppCompatActivity() {
             .setTitle("Warning!")
             .setMessage("Do you want to delete this record?")
             .setPositiveButton("Yes") { _, _ ->
-                //val database = MealDatabase.getMealDatabase(this)
-                //val mealDao = database.getMealDao()
-                //mealDao.deleteMeal(thisMeal)
-                // TODO: uncomment deletion 
+                if (clickedDocument.isNullOrBlank()) {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val database = MealDatabase.getMealDatabase(this@DetailsActivity)
+                        val mealDao = database.getMealDao()
+                        mealDao.deleteMeal(clickedMeal)
+
+                        withContext(Dispatchers.Main) {
+                            onBackPressedDispatcher.onBackPressed()
+                        }
+                    }
+                } else {
+                    // TODO: delete from firebase
+                }
+
             }
             .setNegativeButton("No") { dialog, _ ->
                 dialog.dismiss()
@@ -110,7 +129,8 @@ class DetailsActivity : AppCompatActivity() {
             .setMessage("Do you want to edit this record?")
             .setPositiveButton("Yes") { _, _ ->
                 val intent = Intent(this, AddMealActivity::class.java)
-                intent.putExtra(clickedDocumentId, clickedDocumentId)
+                intent.putExtra("clicked_meal", clickedMeal)
+                intent.putExtra("clicked_document", clickedDocument)
                 startActivity(intent)
             }
             .setNegativeButton("No") { dialog, _ ->
