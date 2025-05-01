@@ -13,19 +13,26 @@
         android:theme="@style/Theme.MyRecipes.Home"
         tools:targetApi="31">
         <activity
+            android:name=".mealEdit.EditMealActivity"
+            android:exported="false"
+            android:label="Edit recipe"
+            android:parentActivityName=".mealDetails.DetailsActivity"
+            android:screenOrientation="nosensor"
+            android:theme="@style/Theme.MyRecipes.Rest"/>
+        <activity
             android:name=".AccountActivity"
             android:exported="false"
             android:label="Account"
             android:parentActivityName=".home.MainActivity"
             android:screenOrientation="nosensor"
-            android:theme="@style/Theme.MyRecipes.Rest"
-            />
+            android:theme="@style/Theme.MyRecipes.Rest" />
         <activity
             android:name=".authorization.AuthorizationActivity"
             android:exported="true"
             android:screenOrientation="nosensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

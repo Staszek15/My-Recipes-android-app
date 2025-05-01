@@ -20,6 +20,8 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -57,21 +59,33 @@ class LogInFragment : Fragment() {
     private fun handleClickListeners() {
         binding.logIn.setOnClickListener {
             if (validatorLogIn(binding.etEmail, binding.etPassword)) {
-                Firebase.auth.signInWithEmailAndPassword(binding.etEmail.text.toString(), binding.etPassword.text.toString())
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            // Sign in success, update UI with the signed-in user's information
-                            val intent = Intent(requireActivity(), MainActivity::class.java)
-                            startActivity(intent)
-                        } else {
-                            Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                        }
+                Firebase.auth.signInWithEmailAndPassword(
+                    binding.etEmail.text.toString(),
+                    binding.etPassword.text.toString()
+                )
+                    .addOnSuccessListener {
+                        val intent = Intent(requireActivity(), MainActivity::class.java)
+                        startActivity(intent)
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.e("Login", "Login failed", exception)
+                        Firebase.analytics.logEvent("login_failure", null)
+
+                        val snackbar = Snackbar.make(
+                            binding.root,
+                            "Login failed. Exception: $exception",
+                            Snackbar.LENGTH_LONG
+                        )
+                        snackbar
+                            .setAction("OK") { snackbar.dismiss() }
+                            .show()
                     }
             }
-            // TODO: delete free log in below
-            val intent = Intent(requireActivity(), MainActivity::class.java)
-            startActivity(intent)
         }
+        // TODO: delete free log in below
+        val intent = Intent(requireActivity(), MainActivity::class.java)
+        startActivity(intent)
+
         binding.remindPass.setOnClickListener { findNavController().navigate(R.id.action_LogInFragment_to_forgotPasswordFragment) }
 
         binding.googleLogIn.setOnClickListener {
@@ -90,7 +104,11 @@ class LogInFragment : Fragment() {
                 try {
                     val result = credentialManager.getCredential(requireContext(), request)
                     handleSignIn(result)
-                    Toast.makeText(requireContext(), "Welcome! You logged in successfully.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Welcome! You logged in successfully.",
+                        Toast.LENGTH_LONG
+                    ).show()
                 } catch (e: GetCredentialException) {
                     Log.e("MainActivity", "GetCredentialException", e)
                 }
@@ -122,6 +140,7 @@ class LogInFragment : Fragment() {
                     Log.e("MainActivity", "Unexpected type of credential")
                 }
             }
+
             else -> {
                 // Catch any unrecognized credential type here.
                 Log.e("MainActivity", "Unexpected type of credential")
@@ -133,7 +152,7 @@ class LogInFragment : Fragment() {
         val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
         Firebase.auth.signInWithCredential(firebaseCredential)
             // there was addOnCompleteListener(this) but idk why this as it was not used later on
-            .addOnCompleteListener{ task ->
+            .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithGoogleCredential:success")

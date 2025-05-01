@@ -21,6 +21,7 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -61,20 +62,29 @@ class RegisterFragment : Fragment() {
                     binding.etEmail.text.toString(),
                     binding.etPassword.text.toString()
                 )
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            val snackbar = Snackbar.make(
-                                binding.root,
-                                "Your account has been created. Please log in with your credentials.",
-                                Snackbar.LENGTH_LONG
-                            )
-                            snackbar
-                                .setAction("OK") { snackbar.dismiss() }
-                                .show()
-                            findNavController().navigate(R.id.action_registerFragment_to_LogInFragment)
-                        } else {
-                            Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                        }
+                    .addOnSuccessListener {
+                        val snackbar = Snackbar.make(
+                            binding.root,
+                            "Your account has been created. Please log in with your credentials.",
+                            Snackbar.LENGTH_LONG
+                        )
+                        snackbar
+                            .setAction("OK") { snackbar.dismiss() }
+                            .show()
+                        findNavController().navigate(R.id.action_registerFragment_to_LogInFragment)
+                    }
+                    .addOnFailureListener {exception ->
+                        Log.e("Register", "Register failed", exception)
+                        Firebase.analytics.logEvent("register_failure", null)
+
+                        val snackbar = Snackbar.make(
+                            binding.root,
+                            "Register failed. Exception: $exception",
+                            Snackbar.LENGTH_LONG
+                        )
+                        snackbar
+                            .setAction("OK") { snackbar.dismiss() }
+                            .show()
                     }
             }
         }

@@ -1,6 +1,7 @@
 package com.staszek15.myrecipes.authorization
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -41,10 +42,9 @@ class ForgotPasswordFragment : Fragment() {
             if (validatorRemindPassword(binding.etEmail)) {
                 Firebase.auth.sendPasswordResetEmail(binding.etEmail.text.toString())
                     .addOnSuccessListener {
-                        Firebase.analytics.logEvent("remind_password_event_success", null)
                         val snackbar = Snackbar.make(
                             binding.root,
-                            "We have sent an email to help you reset your password.",
+                            "You have been sent an email to help you reset your password.",
                             Snackbar.LENGTH_LONG
                         )
                         snackbar
@@ -52,8 +52,18 @@ class ForgotPasswordFragment : Fragment() {
                             .show()
                         findNavController().navigate(R.id.action_forgotPasswordFragment_to_LogInFragment)
                     }
-                    .addOnFailureListener {
-                        Firebase.analytics.logEvent("remind_password_event_failure", null)
+                    .addOnFailureListener { exception ->
+                        Log.e("Remind password", "Remind password failed", exception)
+                        Firebase.analytics.logEvent("remind_password_failure", null)
+
+                        val snackbar = Snackbar.make(
+                            binding.root,
+                            "Remind password failed. Exception: $exception",
+                            Snackbar.LENGTH_LONG
+                        )
+                        snackbar
+                            .setAction("OK") { snackbar.dismiss() }
+                            .show()
                     }
             }
         }

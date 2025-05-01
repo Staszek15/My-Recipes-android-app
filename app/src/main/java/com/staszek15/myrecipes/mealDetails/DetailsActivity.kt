@@ -16,6 +16,7 @@ import com.staszek15.myrecipes.mealAdd.AddMealActivity
 import com.staszek15.myrecipes.mealAdd.IngredientClass
 import com.staszek15.myrecipes.mealDB.MealDatabase
 import com.staszek15.myrecipes.mealDB.MealItemClass
+import com.staszek15.myrecipes.mealEdit.EditMealActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -64,7 +65,7 @@ class DetailsActivity : AppCompatActivity() {
             if (resId != 0) {
                 binding.ivMeal.setImageResource(resId)
             } else {
-                binding.ivMeal.setImageResource(R.drawable.dinner)
+                binding.ivMeal.setImageResource(R.drawable.empty_image)
             }
         }
     }
@@ -128,7 +129,7 @@ class DetailsActivity : AppCompatActivity() {
             .setTitle("Warning!")
             .setMessage("Do you want to edit this record?")
             .setPositiveButton("Yes") { _, _ ->
-                val intent = Intent(this, AddMealActivity::class.java)
+                val intent = Intent(this, EditMealActivity::class.java)
                 intent.putExtra("clicked_meal", clickedMeal)
                 intent.putExtra("clicked_document", clickedDocument)
                 startActivity(intent)

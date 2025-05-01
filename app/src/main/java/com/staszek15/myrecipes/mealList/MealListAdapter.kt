@@ -68,7 +68,7 @@ class MealListAdapter(
             if (resId != 0) {
                 holder.image.setImageResource(resId)
             } else {
-                holder.image.setImageResource(R.drawable.dinner)
+                holder.image.setImageResource(R.drawable.empty_image)
             }
         }
         // favorite label visible only for favorite records

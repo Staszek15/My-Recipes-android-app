@@ -53,6 +53,7 @@ dependencies {
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
     implementation("com.github.bumptech.glide:glide:4.15.1")
+    implementation("androidx.activity:activity:1.10.1")
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
 
 

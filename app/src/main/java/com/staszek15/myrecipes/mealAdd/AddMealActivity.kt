@@ -33,6 +33,7 @@ import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.ActivityAddMealBinding
 import com.staszek15.myrecipes.validatorAddMeal
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -89,7 +90,6 @@ class AddMealActivity : AppCompatActivity() {
 
 
     private fun handleClickListeners(mealType: String) {
-
         // button add ingredient
         binding.ButtonAddIngredient.setOnClickListener {
             ingredientsList.add(IngredientClass("", ""))
@@ -122,7 +122,6 @@ class AddMealActivity : AppCompatActivity() {
                                         ingredientsList.filter { it.amount.isNotEmpty() || it.ingredient.isNotEmpty() }
                                             .toMutableList()
 
-                                    // TODO: image
                                     val newMeal = hashMapOf(
                                         "type" to binding.dropdownType.text.toString(),
                                         "title" to binding.editTextTitle.text.toString(),
@@ -137,6 +136,12 @@ class AddMealActivity : AppCompatActivity() {
                                     Firebase.firestore.collection("Recipes/$mealType/$userId")
                                         .add(newMeal)
                                         .addOnSuccessListener {
+                                            binding.buttonAdd.isEnabled = false
+                                            lifecycleScope.launch {
+                                                delay(10000)
+                                                binding.buttonAdd.isEnabled = true
+                                            }
+                                            clearTextFields()
                                             Snackbar
                                                 .make(
                                                     binding.root,
@@ -145,19 +150,47 @@ class AddMealActivity : AppCompatActivity() {
                                                 )
                                                 .setAction("OK") { }
                                                 .show()
-
-                                            clearTextFields()
                                         }
-                                        .addOnFailureListener {
-                                            Firebase.analytics.logEvent(
-                                                "failure_add_recipe",
-                                                null
-                                            )
+                                        // failed recipe upload to Firestore
+                                        .addOnFailureListener { exception ->
+                                            Log.e("Add recipe", "Recipe upload to Firestore failed", exception)
+                                            Firebase.analytics.logEvent("add_recipe_firestore_failure", null)
+                                            val snackbar = Snackbar.make(
+                                                binding.root,
+                                                "Recipe upload failed. Exception: $exception",
+                                                Snackbar.LENGTH_LONG)
+                                            snackbar
+                                                .setAction("OK") { snackbar.dismiss() }
+                                                .show()
                                         }
                                 }
+                                // failed image url download
+                                .addOnFailureListener { exception ->
+                                    Log.e("Add recipe", "Image url download failed", exception)
+                                    Firebase.analytics.logEvent("add_recipe_url_failure", null)
+                                    val snackbar = Snackbar.make(
+                                        binding.root,
+                                        "Image url download failed. Exception: $exception",
+                                        Snackbar.LENGTH_LONG)
+                                    snackbar
+                                        .setAction("OK") { snackbar.dismiss() }
+                                        .show()
+                                }
+
+                        }
+                        // failed image upload to Firebase Storage
+                        .addOnFailureListener { exception ->
+                            Log.e("Add recipe", "Image upload to Firebase Storage failed", exception)
+                            Firebase.analytics.logEvent("add_recipe_storage_failure", null)
+                            val snackbar = Snackbar.make(
+                                binding.root,
+                                "Image upload failed. Exception: $exception",
+                                Snackbar.LENGTH_LONG)
+                            snackbar
+                                .setAction("OK") { snackbar.dismiss() }
+                                .show()
                         }
                 }
-
             }
         }
     }
@@ -243,6 +276,7 @@ class AddMealActivity : AppCompatActivity() {
 
 
     private fun clearIngredients() {
+        binding.rvIngredients.clearFocus()
         ingredientsList.clear()
         ingredientsList.add(IngredientClass("", ""))
         binding.rvIngredients.adapter?.notifyDataSetChanged()
