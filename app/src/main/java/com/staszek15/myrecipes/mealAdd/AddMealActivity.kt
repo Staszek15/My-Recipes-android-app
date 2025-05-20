@@ -101,15 +101,26 @@ class AddMealActivity : AppCompatActivity() {
 
         // button add meal
         binding.buttonAdd.setOnClickListener {
-            if (!isInputValid()) return@setOnClickListener
+            binding.buttonAdd.isEnabled = false
+            if (!isInputValid()) {
+                binding.buttonAdd.isEnabled = true
+                return@setOnClickListener
+            }
             uri?.let { imageUri ->
                 uploadImage(mealType, imageUri) { imageUrl ->
                     val newMeal = createMapOfMeal(imageUrl)
                     saveMealToFirestore(mealType, newMeal)
+                    binding.buttonAdd.isEnabled = true
                 }
+            } ?: run {
+                Snackbar.make(binding.root, "Please select an image.", Snackbar.LENGTH_LONG)
+                    .setAction("OK") {}
+                    .show()
+                binding.buttonAdd.isEnabled = true
             }
         }
     }
+
 
     private fun isInputValid(): Boolean {
         return validatorAddMeal(
@@ -157,11 +168,6 @@ class AddMealActivity : AppCompatActivity() {
         Firebase.firestore.collection("Recipes/$mealType/$userId")
             .add(meal)
             .addOnSuccessListener {
-                binding.buttonAdd.isEnabled = false
-                lifecycleScope.launch {
-                    delay(10000)
-                    binding.buttonAdd.isEnabled = true
-                }
                 clearTextFields()
                 Snackbar.make(
                     binding.root,
@@ -188,7 +194,7 @@ class AddMealActivity : AppCompatActivity() {
 
     private fun clearTextFields() {
         clearIngredients()
-        binding.dropdownType.text.clear()
+        uri = null
         binding.editTextTitle.text?.clear()
         binding.editTextDescription.text?.clear()
         binding.editTextRecipe.text?.clear()
