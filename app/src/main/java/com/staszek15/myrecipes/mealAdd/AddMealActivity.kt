@@ -1,22 +1,16 @@
 package com.staszek15.myrecipes.mealAdd
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
-import android.content.Intent
 import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.MenuItem
 import android.view.MotionEvent
-import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -32,7 +26,6 @@ import com.google.firebase.storage.ktx.storage
 import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.ActivityAddMealBinding
 import com.staszek15.myrecipes.validatorAddMeal
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
@@ -51,17 +44,17 @@ class AddMealActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val mealType: String = intent.getStringExtra("mealType")!!
+        storageRef = Firebase.storage.reference
 
         setupDropdownMenu(mealType)
         handleImageSelection()
         setupIngredientRecyclerView(ingredientsList)
         handleClickListeners(mealType)
         overrideBackNavigation()
-
-        storageRef = Firebase.storage.reference
     }
 
 
+    // system back arrow navigation
     private fun overrideBackNavigation() {
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -69,6 +62,12 @@ class AddMealActivity : AppCompatActivity() {
             }
         }
         this.onBackPressedDispatcher.addCallback(this, callback)
+    }
+
+    // back navigation for toolbar back arrow
+    override fun onSupportNavigateUp(): Boolean {
+        showConfirmExitDialog()
+        return true
     }
 
 
@@ -102,98 +101,90 @@ class AddMealActivity : AppCompatActivity() {
 
         // button add meal
         binding.buttonAdd.setOnClickListener {
-            if (validatorAddMeal(
-                    binding.editTextTitle,
-                    binding.editTextDescription,
-                    binding.editTextRecipe
-                )
-            ) {
-                uri?.let { uri ->
-                    val userId = Firebase.auth.currentUser!!.uid
-                    val timestamp = System.currentTimeMillis()
-                    storageRef.child("Recipes/$mealType/$userId/$timestamp.jpg").putFile(uri)
-
-                        .addOnSuccessListener { task ->
-                            task.metadata!!.reference!!.downloadUrl
-                                .addOnSuccessListener { url ->
-                                    val imageUrl = url.toString()
-
-                                    ingredientsList =
-                                        ingredientsList.filter { it.amount.isNotEmpty() || it.ingredient.isNotEmpty() }
-                                            .toMutableList()
-
-                                    val newMeal = hashMapOf(
-                                        "type" to binding.dropdownType.text.toString(),
-                                        "title" to binding.editTextTitle.text.toString(),
-                                        "description" to binding.editTextDescription.text.toString(),
-                                        "recipe" to binding.editTextRecipe.text.toString(),
-                                        "ingredients" to Json.encodeToString(ingredientsList),
-                                        "imageUrl" to imageUrl,
-                                        "rating" to binding.ratingBar.rating,
-                                        "favourite" to binding.favSwitch.isChecked
-                                    )
-
-                                    Firebase.firestore.collection("Recipes/$mealType/$userId")
-                                        .add(newMeal)
-                                        .addOnSuccessListener {
-                                            binding.buttonAdd.isEnabled = false
-                                            lifecycleScope.launch {
-                                                delay(10000)
-                                                binding.buttonAdd.isEnabled = true
-                                            }
-                                            clearTextFields()
-                                            Snackbar
-                                                .make(
-                                                    binding.root,
-                                                    "Your recipe for ${newMeal.getValue("title")} has been added to the $mealType list. Enjoy!",
-                                                    Snackbar.LENGTH_INDEFINITE
-                                                )
-                                                .setAction("OK") { }
-                                                .show()
-                                        }
-                                        // failed recipe upload to Firestore
-                                        .addOnFailureListener { exception ->
-                                            Log.e("Add recipe", "Recipe upload to Firestore failed", exception)
-                                            Firebase.analytics.logEvent("add_recipe_firestore_failure", null)
-                                            val snackbar = Snackbar.make(
-                                                binding.root,
-                                                "Recipe upload failed. Exception: $exception",
-                                                Snackbar.LENGTH_LONG)
-                                            snackbar
-                                                .setAction("OK") { snackbar.dismiss() }
-                                                .show()
-                                        }
-                                }
-                                // failed image url download
-                                .addOnFailureListener { exception ->
-                                    Log.e("Add recipe", "Image url download failed", exception)
-                                    Firebase.analytics.logEvent("add_recipe_url_failure", null)
-                                    val snackbar = Snackbar.make(
-                                        binding.root,
-                                        "Image url download failed. Exception: $exception",
-                                        Snackbar.LENGTH_LONG)
-                                    snackbar
-                                        .setAction("OK") { snackbar.dismiss() }
-                                        .show()
-                                }
-
-                        }
-                        // failed image upload to Firebase Storage
-                        .addOnFailureListener { exception ->
-                            Log.e("Add recipe", "Image upload to Firebase Storage failed", exception)
-                            Firebase.analytics.logEvent("add_recipe_storage_failure", null)
-                            val snackbar = Snackbar.make(
-                                binding.root,
-                                "Image upload failed. Exception: $exception",
-                                Snackbar.LENGTH_LONG)
-                            snackbar
-                                .setAction("OK") { snackbar.dismiss() }
-                                .show()
-                        }
+            if (!isInputValid()) return@setOnClickListener
+            uri?.let { imageUri ->
+                uploadImage(mealType, imageUri) { imageUrl ->
+                    val newMeal = createMapOfMeal(imageUrl)
+                    saveMealToFirestore(mealType, newMeal)
                 }
             }
         }
     }
+
+    private fun isInputValid(): Boolean {
+        return validatorAddMeal(
+            binding.editTextTitle,
+            binding.editTextDescription,
+            binding.editTextRecipe
+        )
+    }
+
+    private fun uploadImage(mealType: String, imageUri: Uri, onSuccess: (String) -> Unit) {
+        val userId = Firebase.auth.currentUser!!.uid
+        val timestamp = System.currentTimeMillis()
+        val path = "Recipes/$mealType/$userId/$timestamp.jpg"
+
+        storageRef.child(path).putFile(imageUri)
+            .addOnSuccessListener { task ->
+                task.metadata?.reference?.downloadUrl
+                    ?.addOnSuccessListener { url ->
+                        onSuccess(url.toString())
+                    }
+                    ?.addOnFailureListener { handleFailure("Image url download failed", it, "add_recipe_url_failure") }
+            }
+            .addOnFailureListener { handleFailure("Image upload to Firebase Storage failed", it, "add_recipe_storage_failure") }
+    }
+
+    private fun createMapOfMeal(imageUrl: String): HashMap<String, Any> {
+        val filteredIngredients = ingredientsList
+            .filter { it.amount.isNotEmpty() || it.ingredient.isNotEmpty() }
+
+        return hashMapOf(
+            "type" to binding.dropdownType.text.toString(),
+            "title" to binding.editTextTitle.text.toString(),
+            "description" to binding.editTextDescription.text.toString(),
+            "recipe" to binding.editTextRecipe.text.toString(),
+            "ingredients" to Json.encodeToString(filteredIngredients),
+            "imageUrl" to imageUrl,
+            "rating" to binding.ratingBar.rating,
+            "favourite" to binding.favSwitch.isChecked
+        )
+    }
+
+    private fun saveMealToFirestore(mealType: String, meal: HashMap<String, Any>) {
+        val userId = Firebase.auth.currentUser!!.uid
+
+        Firebase.firestore.collection("Recipes/$mealType/$userId")
+            .add(meal)
+            .addOnSuccessListener {
+                binding.buttonAdd.isEnabled = false
+                lifecycleScope.launch {
+                    delay(10000)
+                    binding.buttonAdd.isEnabled = true
+                }
+                clearTextFields()
+                Snackbar.make(
+                    binding.root,
+                    "Your recipe for ${meal["title"]} has been added to the $mealType list. Enjoy!",
+                    Snackbar.LENGTH_INDEFINITE
+                ).setAction("OK") {}.show()
+            }
+            .addOnFailureListener {
+                handleFailure("Recipe upload to Firestore failed", it, "add_recipe_firestore_failure")
+            }
+    }
+
+    private fun handleFailure(logMessage: String, exception: Exception, analyticsEvent: String) {
+        Log.e("Add recipe", logMessage, exception)
+        Firebase.analytics.logEvent(analyticsEvent, null)
+        Snackbar.make(
+            binding.root,
+            "$logMessage. Exception: $exception",
+            Snackbar.LENGTH_LONG
+        ).setAction("OK") {}.show()
+    }
+
+
 
     private fun clearTextFields() {
         clearIngredients()

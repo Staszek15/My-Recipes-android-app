@@ -1,15 +1,19 @@
 package com.staszek15.myrecipes.mealDetails
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.ActivityDetailsBinding
 import com.staszek15.myrecipes.mealAdd.AddMealActivity
@@ -25,16 +29,33 @@ import kotlinx.serialization.json.Json
 class DetailsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailsBinding
-    private val clickedMeal: MealItemClass by lazy { intent.getParcelableExtra<MealItemClass>("clicked_meal")!! }
-    private val clickedDocument: String? by lazy { intent.getStringExtra("clicked_document") }
+    private lateinit var clickedMeal: MealItemClass
+    private var clickedDocument: String? = null
+    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        clickedMeal = intent.getParcelableExtra<MealItemClass>("clicked_meal")!!
+        clickedDocument = intent.getStringExtra("clicked_document")
+
+        // Register the launcher
+        resultLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+                clickedMeal = result.data?.getParcelableExtra<MealItemClass>("clicked_meal")!!
+                clickedDocument = result.data?.getStringExtra("clicked_document")
+                prepopulateFields()  
+            }
+        }
         prepopulateFields()
     }
+
+    
+
 
     private fun setupIngredientRecyclerView(ingredientsList: MutableList<IngredientClass>) {
         val adapterIngredients = DetailsIngredientAdapter(ingredientsList)
@@ -113,7 +134,7 @@ class DetailsActivity : AppCompatActivity() {
                 } else {
                     // TODO: delete from firebase
                 }
-
+                finish()
             }
             .setNegativeButton("No") { dialog, _ ->
                 dialog.dismiss()
@@ -128,11 +149,18 @@ class DetailsActivity : AppCompatActivity() {
         builder
             .setTitle("Warning!")
             .setMessage("Do you want to edit this record?")
-            .setPositiveButton("Yes") { _, _ ->
-                val intent = Intent(this, EditMealActivity::class.java)
-                intent.putExtra("clicked_meal", clickedMeal)
-                intent.putExtra("clicked_document", clickedDocument)
-                startActivity(intent)
+            .setPositiveButton("Yes") { dialog, _ ->
+                if (clickedDocument.isNullOrBlank()) {
+                    dialog.dismiss()
+                    Snackbar.make(binding.root, "Permission denied. You can edit only your own recipes.", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("OK") {}
+                        .show()
+                } else {
+                    val intent = Intent(this, EditMealActivity::class.java)
+                    intent.putExtra("clicked_meal", clickedMeal)
+                    intent.putExtra("clicked_document", clickedDocument)
+                    resultLauncher.launch(intent)
+                }
             }
             .setNegativeButton("No") { dialog, _ ->
                 dialog.dismiss()
