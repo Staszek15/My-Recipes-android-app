@@ -82,9 +82,6 @@ class LogInFragment : Fragment() {
                     }
             }
         }
-        // TODO: delete free log in below
-        val intent = Intent(requireActivity(), MainActivity::class.java)
-        startActivity(intent)
 
         binding.remindPass.setOnClickListener { findNavController().navigate(R.id.action_LogInFragment_to_forgotPasswordFragment) }
 
