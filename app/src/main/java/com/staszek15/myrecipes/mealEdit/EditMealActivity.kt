@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.ImageView
@@ -52,6 +53,7 @@ class EditMealActivity : AppCompatActivity() {
 
         storageRef = Firebase.storage.reference
         binding.buttonAdd.text = "Update recipe"
+        binding.iconAddPhoto.visibility = View.GONE
 
         prepopulateFields()
         handleClickListeners(clickedMeal.type)
@@ -79,9 +81,10 @@ class EditMealActivity : AppCompatActivity() {
         Glide
             .with(this)
             .load(clickedMeal.imageUrl)
+            .centerCrop()
             .error(R.drawable.empty_image)
             .into(binding.imageViewAdd)
-        binding.imageViewAdd.scaleType = ImageView.ScaleType.CENTER_CROP
+        //binding.imageViewAdd.scaleType = ImageView.ScaleType.CENTER_CROP
 
         // meal type dropdown menu
         val items = listOf("Dinner", "Breakfast", "Dessert", "Shake", "Alcohol", "Decoration")

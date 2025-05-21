@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.MotionEvent
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.ImageView
@@ -16,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.transition.Visibility
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.ktx.auth
@@ -222,8 +224,8 @@ class AddMealActivity : AppCompatActivity() {
                 if (it != null) {
                     uri = it
                     binding.imageViewAdd.setImageURI(uri)
-                    binding.imageViewAdd.scaleType =
-                        ImageView.ScaleType.CENTER_CROP   //set scale type
+                    //binding.imageViewAdd.scaleType = ImageView.ScaleType.CENTER_CROP   //set scale type
+                    binding.iconAddPhoto.visibility = View.GONE
                 }
             }
         binding.cardViewImageAdd.setOnClickListener {
