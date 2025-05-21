@@ -84,4 +84,12 @@ class MainActivity : AppCompatActivity(), HomeListAdapter.RecyclerViewEvent {
         }
     }
 
+    // empty system back arrow navigation
+    private fun overrideBackNavigation() {
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() { }
+        }
+        this.onBackPressedDispatcher.addCallback(this, callback)
+    }
+
 }
