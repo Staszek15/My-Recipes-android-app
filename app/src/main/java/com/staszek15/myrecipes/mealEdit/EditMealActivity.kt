@@ -116,7 +116,20 @@ class EditMealActivity : AppCompatActivity() {
             showClearIngredientsDialog()
         }
         binding.buttonAdd.setOnClickListener {
-            if (!isInputValid()) return@setOnClickListener
+            binding.buttonAdd.isEnabled = false
+
+            if (!isInputValid()) {
+                binding.buttonAdd.isEnabled = true
+                return@setOnClickListener
+            }
+            if (ingredientsList.all { it.ingredient.isNullOrBlank() }) {
+                binding.buttonAdd.isEnabled = true
+                Snackbar.make(binding.root, "Please enter ingredients.", Snackbar.LENGTH_LONG)
+                    .setAction("OK") {}
+                    .show()
+                return@setOnClickListener
+            }
+
             if (NEW_IMAGE_FLAG) {
                 uri?.let { newImageUri ->
                     clickedMeal.imageUrl?.let { oldImageUrl ->
@@ -124,6 +137,7 @@ class EditMealActivity : AppCompatActivity() {
                             uploadImage(mealType, newImageUri) { newImageUrl ->
                                 val updatedMeal = createMapOfMeal(newImageUrl)
                                 updateMealInFirestore(mealType, updatedMeal)
+                                binding.buttonAdd.isEnabled = true
                             }
                         }
                     }
@@ -131,11 +145,7 @@ class EditMealActivity : AppCompatActivity() {
             } else {
                 val updatedMeal = createMapOfMeal(clickedMeal.imageUrl!!)
                 updateMealInFirestore(mealType, updatedMeal)
-                binding.buttonAdd.isEnabled = false
-                lifecycleScope.launch {
-                    delay(5000)
-                    binding.buttonAdd.isEnabled = true
-                }
+                binding.buttonAdd.isEnabled = true
             }
         }
     }
@@ -243,7 +253,7 @@ class EditMealActivity : AppCompatActivity() {
 
     private fun createMapOfMeal(imageUrl: String): HashMap<String, Any> {
         val filteredIngredients = ingredientsList
-            .filter { it.amount.isNotEmpty() || it.ingredient.isNotEmpty() }
+            .filter { it.ingredient.isNotEmpty() }
 
         return hashMapOf(
             "type" to binding.dropdownType.text.toString(),

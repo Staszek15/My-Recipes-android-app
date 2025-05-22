@@ -112,6 +112,13 @@ class AddMealActivity : AppCompatActivity() {
                 binding.buttonAdd.isEnabled = true
                 return@setOnClickListener
             }
+            if (ingredientsList.all { it.ingredient.isNullOrBlank() }) {
+                binding.buttonAdd.isEnabled = true
+                Snackbar.make(binding.root, "Please enter ingredients.", Snackbar.LENGTH_LONG)
+                    .setAction("OK") {}
+                    .show()
+                return@setOnClickListener
+            }
 
             // Create and show the loading dialog
             val loadingView = LayoutInflater.from(this).inflate(R.layout.dialog_loading, null)
@@ -171,7 +178,7 @@ class AddMealActivity : AppCompatActivity() {
 
     private fun createMapOfMeal(imageUrl: String): HashMap<String, Any> {
         val filteredIngredients = ingredientsList
-            .filter { it.amount.isNotEmpty() || it.ingredient.isNotEmpty() }
+            .filter { it.ingredient.isNotEmpty() }
 
         return hashMapOf(
             "type" to binding.dropdownType.text.toString(),
