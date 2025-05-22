@@ -15,7 +15,7 @@ import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
@@ -31,8 +31,6 @@ import com.staszek15.myrecipes.mealAdd.AddIngredientAdapter
 import com.staszek15.myrecipes.mealAdd.IngredientClass
 import com.staszek15.myrecipes.mealDB.MealItemClass
 import com.staszek15.myrecipes.validatorAddMeal
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 

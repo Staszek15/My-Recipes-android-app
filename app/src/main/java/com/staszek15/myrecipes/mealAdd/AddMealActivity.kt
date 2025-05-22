@@ -3,7 +3,6 @@ package com.staszek15.myrecipes.mealAdd
 import android.app.AlertDialog
 import android.content.Context
 import android.content.res.Resources
-import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -11,16 +10,13 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
-import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.transition.Visibility
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.ktx.auth
@@ -31,8 +27,6 @@ import com.google.firebase.storage.ktx.storage
 import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.ActivityAddMealBinding
 import com.staszek15.myrecipes.validatorAddMeal
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -50,6 +44,7 @@ class AddMealActivity : AppCompatActivity() {
 
         val mealType: String = intent.getStringExtra("mealType")!!
         storageRef = Firebase.storage.reference
+
 
         setupDropdownMenu(mealType)
         handleImageSelection()

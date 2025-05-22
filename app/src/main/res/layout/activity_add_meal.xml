@@ -162,13 +162,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:layout_weight="1"
-                    android:drawableLeft="@drawable/baseline_add_24"
+                    app:icon="@drawable/baseline_add_24"
                     android:padding="12dp"
                     android:text="Add Ingredient"
                     android:textColor="#707070"
                     app:backgroundTint="@android:color/transparent"
                     app:cornerRadius="8dp"
-                    app:iconTint="@null"
+                    app:iconTint="@color/grey_icon"
+                    app:iconSize="24dp"
                     app:strokeColor="#808080"
                     app:strokeWidth="2dp" />
 
@@ -177,13 +178,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:drawableLeft="@drawable/baseline_delete_24"
+                    app:icon="@drawable/baseline_delete_24"
+                    app:iconSize="24dp"
                     android:padding="12dp"
                     android:text="Clear"
                     android:textColor="#707070"
                     app:backgroundTint="@android:color/transparent"
                     app:cornerRadius="8dp"
-                    app:iconTint="@null"
+                    app:iconTint="@color/grey_icon"
                     app:strokeColor="#808080"
                     app:strokeWidth="2dp" />
 

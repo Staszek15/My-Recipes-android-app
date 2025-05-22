@@ -15,6 +15,8 @@
     <color name="purple_dark">#401A3B</color>
     <color name="background">#EBCCAA</color>
 
+    <color name="grey_icon">#606060</color>
+
     <!--
 
       <color name="beige_background">#f2d8bd</color>
