@@ -2,13 +2,16 @@ package com.staszek15.myrecipes.mealAdd
 
 import android.app.AlertDialog
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.ImageView
@@ -104,23 +107,42 @@ class AddMealActivity : AppCompatActivity() {
         // button add meal
         binding.buttonAdd.setOnClickListener {
             binding.buttonAdd.isEnabled = false
+
             if (!isInputValid()) {
                 binding.buttonAdd.isEnabled = true
                 return@setOnClickListener
             }
+
+            // Create and show the loading dialog
+            val loadingView = LayoutInflater.from(this).inflate(R.layout.dialog_loading, null)
+            val loadingDialog = AlertDialog.Builder(this)
+                .setView(loadingView)
+                .setCancelable(false)
+                .create()
+            loadingDialog.show()
+            val halfScreenHeight = Resources.getSystem().displayMetrics.heightPixels /2
+            val dialogWidth = (Resources.getSystem().displayMetrics.widthPixels * 0.9).toInt() // 90% of screen width
+
+            loadingDialog.window?.setLayout(dialogWidth, halfScreenHeight)
+            loadingDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+
             uri?.let { imageUri ->
                 uploadImage(mealType, imageUri) { imageUrl ->
                     val newMeal = createMapOfMeal(imageUrl)
                     saveMealToFirestore(mealType, newMeal)
+                    loadingDialog.dismiss()
                     binding.buttonAdd.isEnabled = true
                 }
             } ?: run {
+                loadingDialog.dismiss()
                 Snackbar.make(binding.root, "Please select an image.", Snackbar.LENGTH_LONG)
                     .setAction("OK") {}
                     .show()
                 binding.buttonAdd.isEnabled = true
             }
         }
+
     }
 
 
@@ -196,18 +218,15 @@ class AddMealActivity : AppCompatActivity() {
 
     private fun clearTextFields() {
         clearIngredients()
-        uri = null
+
         binding.editTextTitle.text?.clear()
         binding.editTextDescription.text?.clear()
         binding.editTextRecipe.text?.clear()
         binding.ratingBar.rating = 0F
         binding.favSwitch.isChecked = false
 
-        //don't know how to change background tint
-        binding.imageViewAdd.setBackgroundResource(R.drawable.dinner)
-        binding.imageViewAdd.backgroundTintMode = PorterDuff.Mode.SRC_OVER
-        binding.imageViewAdd.setImageResource(R.drawable.outline_add_photo_alternate_24)
-        binding.imageViewAdd.scaleType = ImageView.ScaleType.FIT_CENTER
+        binding.imageViewAdd.setImageDrawable(null)
+        uri = null
     }
 
     private fun setupDropdownMenu(mealType: String) {

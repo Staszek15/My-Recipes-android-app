@@ -20,7 +20,7 @@
             android:screenOrientation="nosensor"
             android:theme="@style/Theme.MyRecipes.Rest"/>
         <activity
-            android:name=".AccountActivity"
+            android:name=".account.AccountActivity"
             android:exported="false"
             android:label="Account"
             android:parentActivityName=".home.MainActivity"

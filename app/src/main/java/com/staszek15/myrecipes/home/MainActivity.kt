@@ -6,10 +6,9 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import android.window.OnBackInvokedDispatcher
 import androidx.activity.OnBackPressedCallback
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.staszek15.myrecipes.AccountActivity
+import com.staszek15.myrecipes.account.AccountActivity
 import com.staszek15.myrecipes.mealList.MealListActivity
 import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.ActivityMainBinding

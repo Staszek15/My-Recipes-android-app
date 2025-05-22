@@ -1,6 +1,11 @@
 package com.staszek15.myrecipes.authorization
 
+import android.app.AlertDialog
+import android.content.Intent
+import android.content.res.Resources
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
@@ -11,6 +16,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
 import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.ActivityAuthorizationBinding
+import com.staszek15.myrecipes.home.MainActivity
 
 class AuthorizationActivity : AppCompatActivity() {
 
@@ -33,8 +39,7 @@ class AuthorizationActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         if (Firebase.auth.currentUser != null) {
-            // TODO: uncomment auto log in
-            //startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this, MainActivity::class.java))
         }
     }
 

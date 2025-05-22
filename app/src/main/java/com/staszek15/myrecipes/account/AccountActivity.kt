@@ -1,4 +1,4 @@
-package com.staszek15.myrecipes
+package com.staszek15.myrecipes.account
 
 import android.app.AlertDialog
 import android.content.Intent
