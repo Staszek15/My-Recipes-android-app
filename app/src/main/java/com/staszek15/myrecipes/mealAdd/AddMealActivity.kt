@@ -121,8 +121,7 @@ class AddMealActivity : AppCompatActivity() {
                 .create()
             loadingDialog.show()
             val halfScreenHeight = Resources.getSystem().displayMetrics.heightPixels /2
-            val dialogWidth = (Resources.getSystem().displayMetrics.widthPixels * 0.9).toInt() // 90% of screen width
-
+            val dialogWidth = (Resources.getSystem().displayMetrics.widthPixels * 0.85).toInt()
             loadingDialog.window?.setLayout(dialogWidth, halfScreenHeight)
             loadingDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
