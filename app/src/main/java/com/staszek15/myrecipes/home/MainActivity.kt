@@ -26,11 +26,11 @@ class MainActivity : AppCompatActivity(), HomeListAdapter.RecyclerViewEvent {
         displayRecyclerView()
         setUpClickListeners()
 
-        // TODO: uncomment on back pressed
-//        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-//            // leave blank to block back arrow
-//            override fun handleOnBackPressed() {}
-//        })
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            // leave blank to block os back arrow
+            override fun handleOnBackPressed() {}
+        })
     }
 
 

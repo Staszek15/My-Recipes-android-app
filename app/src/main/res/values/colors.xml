@@ -7,6 +7,7 @@
 
     <color name="beige_background">#F5E7CF</color>
     <color name="dark_beige">#875E3E</color>
+    <color name="medium_beige">#A67B5B</color>
 
     <color name="raspberry">#EB0165</color>
     <color name="raspberry_disabled">#4DC3678E</color>

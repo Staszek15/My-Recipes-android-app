@@ -28,23 +28,35 @@ class AccountActivity : AppCompatActivity() {
 
     private fun handleClickListeners() {
         binding.btnSignOut.setOnClickListener {
-            Firebase.auth.signOut()
-            startActivity(Intent(this, AuthorizationActivity::class.java))
-        }
-        binding.btnSignOut.setOnClickListener {
-            showDeleteDialog("Do you want to sign out?", "Failed to sign out. Try again later.")
+            showLogOutDialog()
         }
         binding.btnDeleteAccount.setOnClickListener {
-            showDeleteDialog("Do you want to delete this account?", "Failed to delete your account. Try again later.")
+            showDeleteDialog()
         }
-
     }
 
-    private fun showDeleteDialog(dialogMessage: String, snackbarMessage: String) {
+
+    private fun showLogOutDialog() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
         builder
             .setTitle("Warning!")
-            .setMessage(dialogMessage)
+            .setMessage("Do you want to delete this account?")
+            .setPositiveButton("Yes") { _, _ ->
+                Firebase.auth.signOut()
+                startActivity(Intent(this, AuthorizationActivity::class.java))
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+            }
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
+    private fun showDeleteDialog() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder
+            .setTitle("Warning!")
+            .setMessage("Do you want to delete this account?")
             .setPositiveButton("Yes") { _, _ ->
                 Firebase.auth.currentUser!!.delete()
                     .addOnSuccessListener {
@@ -53,7 +65,7 @@ class AccountActivity : AppCompatActivity() {
                     .addOnFailureListener {
                         val snackbar = Snackbar.make(
                             binding.root,
-                            snackbarMessage,
+                            "Failed to delete your account. Try again later.",
                             Snackbar.LENGTH_LONG
                         )
                         snackbar

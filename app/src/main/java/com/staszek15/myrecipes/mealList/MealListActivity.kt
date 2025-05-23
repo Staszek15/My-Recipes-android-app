@@ -5,11 +5,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.mealDB.MealItemClass
 import com.staszek15.myrecipes.mealAdd.AddMealActivity
 import com.staszek15.myrecipes.mealDetails.DetailsActivity
@@ -77,6 +80,11 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
             binding.mealsRecyclerView.setHasFixedSize(true)
             binding.mealsRecyclerView.layoutManager = LinearLayoutManager(applicationContext)
             binding.mealsRecyclerView.adapter = adapter
+            val divider = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
+            AppCompatResources.getDrawable(this, R.drawable.divider_custom)?.let {
+                divider.setDrawable(it)
+            }
+            binding.mealsRecyclerView.addItemDecoration(divider)
         }
     }
 

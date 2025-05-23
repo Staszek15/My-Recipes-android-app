@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/drawable/divider_inset.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:left="112dp" android:right="112dp">
+        <shape android:shape="rectangle">
+            <size android:height="1dp" />
+            <solid android:color="@color/medium_beige" />
+        </shape>
+    </item>
+</layer-list>
