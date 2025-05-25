@@ -8,7 +8,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.staszek15.myrecipes.account.AccountActivity
+import com.staszek15.myrecipes.account.SettingsActivity
 import com.staszek15.myrecipes.mealList.MealListActivity
 import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.ActivityMainBinding
@@ -25,12 +25,7 @@ class MainActivity : AppCompatActivity(), HomeListAdapter.RecyclerViewEvent {
 
         displayRecyclerView()
         setUpClickListeners()
-
-
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            // leave blank to block os back arrow
-            override fun handleOnBackPressed() {}
-        })
+        overrideBackNavigation()
     }
 
 
@@ -43,7 +38,7 @@ class MainActivity : AppCompatActivity(), HomeListAdapter.RecyclerViewEvent {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.icon_account -> {
-                startActivity(Intent(this, AccountActivity::class.java))
+                startActivity(Intent(this, SettingsActivity::class.java))
                 true
             }
 

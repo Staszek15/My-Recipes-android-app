@@ -8,23 +8,23 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.staszek15.myrecipes.authorization.AuthorizationActivity
-import com.staszek15.myrecipes.databinding.ActivityAccountBinding
+import com.staszek15.myrecipes.databinding.ActivitySettingsBinding
+import androidx.core.net.toUri
 
-class AccountActivity : AppCompatActivity() {
+class SettingsActivity : AppCompatActivity() {
 
-    lateinit var binding: ActivityAccountBinding
+    lateinit var binding: ActivitySettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityAccountBinding.inflate(layoutInflater)
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         handleClickListeners()
         binding.tvEmail.text = Firebase.auth.currentUser?.email.toString()
         binding.tvUid.text = Firebase.auth.currentUser?.uid.toString()
     }
-
 
     private fun handleClickListeners() {
         binding.btnSignOut.setOnClickListener {
@@ -33,8 +33,20 @@ class AccountActivity : AppCompatActivity() {
         binding.btnDeleteAccount.setOnClickListener {
             showDeleteDialog()
         }
+        binding.btnEmail.setOnClickListener {
+            val emailAddress = "mt.stasiak15@gmail.com"
+            val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+                data = "mailto: $emailAddress".toUri()
+                putExtra(Intent.EXTRA_SUBJECT, "Sugar Alarm App email")
+            }
+            startActivity(emailIntent)
+        }
+        binding.btnGithub.setOnClickListener {
+            val githubLink = "https://github.com/Staszek15"
+            val githubIntent = Intent(Intent.ACTION_VIEW, githubLink.toUri())
+            startActivity(githubIntent)
+        }
     }
-
 
     private fun showLogOutDialog() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
