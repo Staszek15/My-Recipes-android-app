@@ -22,6 +22,8 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingExcept
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -73,18 +75,25 @@ class LogInFragment : Fragment() {
                         startActivity(intent)
                     }
                     .addOnFailureListener { exception ->
-                        Log.e("Login", "Login failed", exception)
-                        Firebase.analytics.logEvent("login_failure", null)
-
                         loadingDialog?.dismiss()
+
+                        val message = when (exception) {
+                            is FirebaseAuthInvalidUserException,
+                            is FirebaseAuthInvalidCredentialsException -> {
+                                "Incorrect email or password."
+                            }
+                            else -> {
+                                Log.e("Login", "Unexpected login failure", exception)
+                                Firebase.analytics.logEvent("login_failure", null)
+                                "Login failed. Please try again later."
+                            }
+                        }
                         val snackbar = Snackbar.make(
                             binding.root,
-                            "Login failed. Exception: $exception",
+                            message,
                             Snackbar.LENGTH_LONG
                         )
-                        snackbar
-                            .setAction("OK") { snackbar.dismiss() }
-                            .show()
+                        snackbar.setAction("OK") { snackbar.dismiss() }.show()
                     }
             }
         }
