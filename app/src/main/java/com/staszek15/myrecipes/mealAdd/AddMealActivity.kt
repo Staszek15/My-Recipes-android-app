@@ -15,7 +15,6 @@ import android.widget.ArrayAdapter
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.ktx.analytics
@@ -26,6 +25,7 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.ActivityAddMealBinding
+import com.staszek15.myrecipes.loadingDialog
 import com.staszek15.myrecipes.validatorAddMeal
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -102,41 +102,31 @@ class AddMealActivity : AppCompatActivity() {
         // button add meal
         binding.buttonAdd.setOnClickListener {
             binding.buttonAdd.isEnabled = false
+            val loadingDialog = loadingDialog(this)
 
             if (!isInputValid()) {
                 binding.buttonAdd.isEnabled = true
+                loadingDialog?.dismiss()
                 return@setOnClickListener
             }
             if (ingredientsList.all { it.ingredient.isNullOrBlank() }) {
                 binding.buttonAdd.isEnabled = true
+                loadingDialog?.dismiss()
                 Snackbar.make(binding.root, "Please enter ingredients.", Snackbar.LENGTH_LONG)
                     .setAction("OK") {}
                     .show()
                 return@setOnClickListener
             }
 
-            // Create and show the loading dialog
-            val loadingView = LayoutInflater.from(this).inflate(R.layout.dialog_loading, null)
-            val loadingDialog = AlertDialog.Builder(this)
-                .setView(loadingView)
-                .setCancelable(false)
-                .create()
-            loadingDialog.show()
-            val halfScreenHeight = Resources.getSystem().displayMetrics.heightPixels /2
-            val dialogWidth = (Resources.getSystem().displayMetrics.widthPixels * 0.85).toInt()
-            loadingDialog.window?.setLayout(dialogWidth, halfScreenHeight)
-            loadingDialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
-
             uri?.let { imageUri ->
                 uploadImage(mealType, imageUri) { imageUrl ->
                     val newMeal = createMapOfMeal(imageUrl)
                     saveMealToFirestore(mealType, newMeal)
-                    loadingDialog.dismiss()
+                    loadingDialog?.dismiss()
                     binding.buttonAdd.isEnabled = true
                 }
             } ?: run {
-                loadingDialog.dismiss()
+                loadingDialog?.dismiss()
                 Snackbar.make(binding.root, "Please select an image.", Snackbar.LENGTH_LONG)
                     .setAction("OK") {}
                     .show()
@@ -145,7 +135,6 @@ class AddMealActivity : AppCompatActivity() {
         }
 
     }
-
 
     private fun isInputValid(): Boolean {
         return validatorAddMeal(

@@ -12,13 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyRecipes.Home"
         tools:targetApi="31">
-        <activity
-            android:name=".mealEdit.EditMealActivity"
-            android:exported="false"
-            android:label="Edit recipe"
-            android:parentActivityName=".mealDetails.DetailsActivity"
-            android:screenOrientation="nosensor"
-            android:theme="@style/Theme.MyRecipes.Rest"/>
+
         <activity
             android:name=".account.AccountActivity"
             android:exported="false"
@@ -51,6 +45,14 @@
             android:screenOrientation="nosensor"
             android:theme="@style/Theme.MyRecipes.Rest"
             android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".mealEdit.EditMealActivity"
+            android:exported="false"
+            android:label="Edit recipe"
+            android:parentActivityName=".mealDetails.DetailsActivity"
+            android:screenOrientation="nosensor"
+            android:theme="@style/Theme.MyRecipes.Rest"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".mealList.MealListActivity"
             android:exported="false"

@@ -4,9 +4,11 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -27,6 +29,7 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.ActivityAddMealBinding
+import com.staszek15.myrecipes.loadingDialog
 import com.staszek15.myrecipes.mealAdd.AddIngredientAdapter
 import com.staszek15.myrecipes.mealAdd.IngredientClass
 import com.staszek15.myrecipes.mealDB.MealItemClass

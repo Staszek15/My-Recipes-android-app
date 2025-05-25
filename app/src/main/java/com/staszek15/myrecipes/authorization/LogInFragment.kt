@@ -28,6 +28,7 @@ import com.google.firebase.ktx.Firebase
 import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.FragmentLogInBinding
 import com.staszek15.myrecipes.home.MainActivity
+import com.staszek15.myrecipes.loadingDialog
 import com.staszek15.myrecipes.validatorLogIn
 import kotlinx.coroutines.launch
 
@@ -59,11 +60,15 @@ class LogInFragment : Fragment() {
     private fun handleClickListeners() {
         binding.logIn.setOnClickListener {
             if (validatorLogIn(binding.etEmail, binding.etPassword)) {
+
+                val loadingDialog = loadingDialog(requireActivity())
+
                 Firebase.auth.signInWithEmailAndPassword(
                     binding.etEmail.text.toString(),
                     binding.etPassword.text.toString()
                 )
                     .addOnSuccessListener {
+                        loadingDialog?.dismiss()
                         val intent = Intent(requireActivity(), MainActivity::class.java)
                         startActivity(intent)
                     }
@@ -71,6 +76,7 @@ class LogInFragment : Fragment() {
                         Log.e("Login", "Login failed", exception)
                         Firebase.analytics.logEvent("login_failure", null)
 
+                        loadingDialog?.dismiss()
                         val snackbar = Snackbar.make(
                             binding.root,
                             "Login failed. Exception: $exception",

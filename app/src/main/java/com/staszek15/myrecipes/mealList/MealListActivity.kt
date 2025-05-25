@@ -1,5 +1,6 @@
 package com.staszek15.myrecipes.mealList
 
+import android.app.AlertDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -17,8 +18,10 @@ import com.staszek15.myrecipes.mealDB.MealItemClass
 import com.staszek15.myrecipes.mealAdd.AddMealActivity
 import com.staszek15.myrecipes.mealDetails.DetailsActivity
 import com.staszek15.myrecipes.databinding.ActivityMealListBinding
+import com.staszek15.myrecipes.loadingDialog
 import com.staszek15.myrecipes.mealDB.MealDatabase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -44,6 +47,12 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
     }
 
     private fun setupFirestore() {
+        var loadingDialog: AlertDialog? = null
+        val dialogJob = lifecycleScope.launch {
+            delay(500)
+            loadingDialog = loadingDialog(this@MealListActivity)
+        }
+
         val userId = Firebase.auth.currentUser!!.uid
         Firebase.firestore.collection("Recipes/$mealType/$userId")
             .get()
@@ -62,10 +71,14 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
                     }.toMutableList()
                     mealList.addAll(defaultMeals)
 
-                    withContext(Dispatchers.Main) { displayRecyclerView(mealList) }
+                    withContext(Dispatchers.Main) {
+                        dialogJob.cancel()
+                        loadingDialog?.dismiss()
+                        displayRecyclerView(mealList) }
                 }
             }
             .addOnFailureListener { e ->
+                loadingDialog?.dismiss()
                 Log.e("Firestore", "Error getting documents: ", e)
             }
     }

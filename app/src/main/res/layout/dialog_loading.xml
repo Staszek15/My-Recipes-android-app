@@ -12,29 +12,29 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="6"
         app:cardCornerRadius="16dp">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/image_view_add"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/chef" />
+            android:adjustViewBounds="true"
+            android:layout_height="wrap_content"
+            android:src="@drawable/pot" />
 
     </androidx.cardview.widget.CardView>
 
     <ProgressBar
         android:id="@+id/loading_spinner"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:layout_weight="1"
         android:indeterminate="true" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
+        android:gravity="center"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        android:text="Uploading your recipe..."
+        android:text="Loading..."
         android:textAppearance="?android:attr/textAppearanceMedium" />
 </LinearLayout>
