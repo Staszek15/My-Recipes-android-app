@@ -15,7 +15,7 @@ class HomeListAdapter(
     inner class HomeListViewHolder(binding: HomeListItemBinding) :
         RecyclerView.ViewHolder(binding.root), View.OnClickListener{
         val image = binding.imageViewItem
-        val text = binding.text
+        //val text = binding.text
 
         init {
             binding.root.setOnClickListener(this)
@@ -42,7 +42,7 @@ class HomeListAdapter(
 
     override fun onBindViewHolder(holder: HomeListViewHolder, position: Int) {
 
-        holder.text.text = homeItemsList[position].text
+        //holder.text.text = homeItemsList[position].text
         holder.image.setImageResource(homeItemsList[position].image)
     }
 

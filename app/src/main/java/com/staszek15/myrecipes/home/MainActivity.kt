@@ -8,7 +8,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.staszek15.myrecipes.account.SettingsActivity
+import com.staszek15.myrecipes.settings.SettingsActivity
 import com.staszek15.myrecipes.mealList.MealListActivity
 import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.ActivityMainBinding
@@ -62,10 +62,10 @@ class MainActivity : AppCompatActivity(), HomeListAdapter.RecyclerViewEvent {
     }
 
     private fun createHomeList(): List<HomeItemClass> = buildList {
-        add(HomeItemClass("Dinners", R.drawable.dinner))
-        add(HomeItemClass("Breakfasts", R.drawable.breakfast))
-        add(HomeItemClass("Desserts", R.drawable.dessert))
-        add(HomeItemClass("Shakes", R.drawable.milkshake))
+        add(HomeItemClass("Dinners", R.drawable.new_dinner))
+        add(HomeItemClass("Breakfasts", R.drawable.new_breakfast))
+        add(HomeItemClass("Desserts", R.drawable.new_breakfast))
+        add(HomeItemClass("Shakes", R.drawable.new_dinner))
         add(HomeItemClass("Alcohols", R.drawable.alcohol))
         add(HomeItemClass("Decorations", R.drawable.food_decoration))
     }

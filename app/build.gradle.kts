@@ -56,6 +56,7 @@ dependencies {
     implementation("androidx.activity:activity:1.10.1")
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
 
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
 
     implementation(platform("com.google.firebase:firebase-bom:33.12.0"))
     implementation("com.google.firebase:firebase-analytics")

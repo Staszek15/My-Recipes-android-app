@@ -23,14 +23,16 @@ import com.staszek15.myrecipes.mealDB.MealDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent {
 
     private lateinit var binding: ActivityMealListBinding
-    private lateinit var mealList: MutableList<Pair<MealItemClass, String?>>
+    private var mealList: MutableList<Pair<MealItemClass, String?>> = mutableListOf()
+
     // delete 's' to match type in database
-    private val mealType by lazy {intent.getStringExtra("mealType")!!.dropLast(1)}
+    private val mealType by lazy { intent.getStringExtra("mealType")!!.dropLast(1) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,33 +56,69 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
         }
 
         val userId = Firebase.auth.currentUser!!.uid
-        Firebase.firestore.collection("Recipes/$mealType/$userId")
-            .get()
-            .addOnSuccessListener { result ->
-                val database = MealDatabase.getMealDatabase(this)
-                val mealDao = database.getMealDao()
 
-                lifecycleScope.launch(Dispatchers.IO) {
-                    val defaultMeals = mealDao.getTypeMeals(mealType)
-                        .map { meal -> Pair(meal, null as String?) }.toMutableList()
-                    mealList = result.mapNotNull { document ->
-                        Pair<MealItemClass, String?>(
-                            document.toObject(MealItemClass::class.java),
-                            document.id
-                        )
-                    }.toMutableList()
-                    mealList.addAll(defaultMeals)
+        if (mealType != "Favourite") {
+            Firebase.firestore.collection("Recipes/$mealType/$userId")
+                .get()
+                .addOnSuccessListener { result ->
+                    val database = MealDatabase.getMealDatabase(this)
+                    val mealDao = database.getMealDao()
 
-                    withContext(Dispatchers.Main) {
-                        dialogJob.cancel()
-                        loadingDialog?.dismiss()
-                        displayRecyclerView(mealList) }
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val defaultMeals = mealDao.getTypeMeals(mealType)
+                            .map { meal -> Pair(meal, null as String?) }.toMutableList()
+                        mealList = result.mapNotNull { document ->
+                            Pair<MealItemClass, String?>(
+                                document.toObject(MealItemClass::class.java),
+                                document.id
+                            )
+                        }.toMutableList()
+                        mealList.addAll(defaultMeals)
+                        mealList
+                            .sortWith(compareByDescending<Pair<MealItemClass, String?>> { it.first.favourite }
+                                .thenBy { it.first.title })
+
+                        withContext(Dispatchers.Main) {
+                            dialogJob.cancel()
+                            loadingDialog?.dismiss()
+                            displayRecyclerView(mealList)
+                        }
+                    }
                 }
-            }
-            .addOnFailureListener { e ->
+                .addOnFailureListener { e ->
+                    loadingDialog?.dismiss()
+                    Log.e("Firestore", "Error getting documents: ", e)
+                }
+        } else {
+            val types = listOf("Dinner", "Breakfast", "Dessert", "Shake", "Alcohol", "Decoration")
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    for (i in types) {
+                        try {
+                            val result = Firebase.firestore.collection("Recipes/$i/$userId")
+                                .whereEqualTo("favourite", true)
+                                .get()
+                                .await()
+                            val tempMealList = result.mapNotNull { document ->
+                                Pair<MealItemClass, String?>(
+                                    document.toObject(MealItemClass::class.java),
+                                    document.id
+                                )
+                            }.toMutableList()
+                            mealList.addAll(tempMealList)
+                        } catch (e: Exception) {
+                            loadingDialog?.dismiss()
+                            Log.e("Firestore", "Error getting favourite documents: ", e)
+                        }
+                    }
+                    mealList.sortBy { it.first.title }
+                }
+
+                dialogJob.cancel()
                 loadingDialog?.dismiss()
-                Log.e("Firestore", "Error getting documents: ", e)
+                displayRecyclerView(mealList)
             }
+        }
     }
 
 

@@ -74,7 +74,10 @@ class MealListAdapter(
         // favorite label visible only for favorite records
         if (mealItemsList[position].first.favourite) {
             holder.favLabel.visibility = View.VISIBLE
+        } else {
+            holder.favLabel.visibility = View.INVISIBLE
         }
+
     }
 
 

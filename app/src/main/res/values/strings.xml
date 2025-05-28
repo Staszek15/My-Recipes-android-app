@@ -10,12 +10,9 @@ While your sauce is simmering, prepare your rice. Boil two cups of water with 1-
 Once your sauce is finished simmering, pour in your cream and a pinch of salt. Stir to combine. If your sauce seems too thick, add in a few splashes of water at a time until you reach your desired consistency. You can also blend the sauce at this step before adding your chicken.
 Add back in your chicken and the juices. Stir and simmer for another 5-10 minutes.
 Garnish with a drizzle of cream and a sprinkle of cilantro. Serve with your basmati rice and fresh naan. Enjoy!</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="welcome">Welcome to My\u00A0Recipes!</string>
     <string name="create_acc">Create account</string>
     <string name="remind_password">Remind password</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="WEB_CLIENT_ID">466024413319-1aovp1cac84bpdb3a01jut9rqo3as4mf.apps.googleusercontent.com</string>
     <string name="or"><u>or</u></string>
 </resources>
