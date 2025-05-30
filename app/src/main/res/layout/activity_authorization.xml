@@ -42,7 +42,7 @@
         android:layout_weight="5"
         app:defaultNavHost="true"
         app:navGraph="@navigation/my_nav"
-        tools:layout="@layout/fragment_register" />
+        tools:layout="@layout/fragment_welcome" />
 
 
 </LinearLayout>

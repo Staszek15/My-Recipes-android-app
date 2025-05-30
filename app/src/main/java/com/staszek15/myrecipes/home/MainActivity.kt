@@ -62,12 +62,12 @@ class MainActivity : AppCompatActivity(), HomeListAdapter.RecyclerViewEvent {
     }
 
     private fun createHomeList(): List<HomeItemClass> = buildList {
-        add(HomeItemClass("Dinners", R.drawable.new_dinner))
-        add(HomeItemClass("Breakfasts", R.drawable.new_breakfast))
-        add(HomeItemClass("Desserts", R.drawable.new_breakfast))
-        add(HomeItemClass("Shakes", R.drawable.new_dinner))
-        add(HomeItemClass("Alcohols", R.drawable.alcohol))
-        add(HomeItemClass("Decorations", R.drawable.food_decoration))
+        add(HomeItemClass("Breakfasts", R.drawable.breakfasts))
+        add(HomeItemClass("Suppers", R.drawable.suppers))
+        add(HomeItemClass("Dinners", R.drawable.dinners))
+        add(HomeItemClass("Desserts", R.drawable.desserts))
+        add(HomeItemClass("Shakes", R.drawable.shakes))
+        add(HomeItemClass("Drinks", R.drawable.drinks))
     }
 
     private fun setUpClickListeners() {

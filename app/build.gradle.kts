@@ -5,6 +5,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization")
     id("com.google.gms.google-services")
     id("kotlin-parcelize")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -54,6 +55,8 @@ dependencies {
 
     implementation("com.github.bumptech.glide:glide:4.15.1")
     implementation("androidx.activity:activity:1.10.1")
+    implementation("com.google.firebase:firebase-config-ktx:22.1.2")
+    implementation("com.google.firebase:firebase-crashlytics:19.4.3")
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
 
     implementation("com.google.android.gms:play-services-auth:21.3.0")

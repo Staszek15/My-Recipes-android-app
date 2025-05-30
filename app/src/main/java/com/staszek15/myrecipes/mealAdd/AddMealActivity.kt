@@ -12,6 +12,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
+import android.widget.ImageButton
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +22,7 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import com.staszek15.myrecipes.R
@@ -36,6 +38,7 @@ class AddMealActivity : AppCompatActivity() {
     private var ingredientsList = mutableListOf(IngredientClass("", ""))
     private lateinit var storageRef: StorageReference
     private var uri: Uri? = null
+    private var isFavourite = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,12 +48,53 @@ class AddMealActivity : AppCompatActivity() {
         val mealType: String = intent.getStringExtra("mealType")!!
         storageRef = Firebase.storage.reference
 
-
+        fetchRemoteConfig()
         setupDropdownMenu(mealType)
         handleImageSelection()
         setupIngredientRecyclerView(ingredientsList)
         handleClickListeners(mealType)
         overrideBackNavigation()
+    }
+
+    private fun fetchRemoteConfig() {
+        Firebase.remoteConfig.fetchAndActivate()
+            .addOnCompleteListener {
+                setupRemoteConfigUI()
+            }
+    }
+
+    private fun setupRemoteConfigUI() {
+        val favouritesUiHeart = Firebase.remoteConfig.getBoolean("favourites_ui_heart")
+        if (favouritesUiHeart) {
+            binding.switchFav.visibility = View.GONE
+            binding.btnFav.visibility = View.VISIBLE
+            binding.btnFav.setOnClickListener {
+                isFavourite = !isFavourite
+                updateHeartUI(isFavourite)
+                logFavouriteEvent("heart", isFavourite)
+            }
+        } else {
+            binding.btnFav.visibility = View.GONE
+            binding.switchFav.visibility = View.VISIBLE
+            binding.switchFav.setOnCheckedChangeListener { _, isChecked ->
+                isFavourite = isChecked
+                logFavouriteEvent("switch", isFavourite)
+            }
+        }
+    }
+
+    private fun updateHeartUI(isFavourite: Boolean) {
+        val icon =
+            if (isFavourite) R.drawable.baseline_favorite_48 else R.drawable.outline_favourite_48
+        binding.btnFav.setImageResource(icon)
+    }
+
+    private fun logFavouriteEvent(uiType: String, isFavourite: Boolean) {
+        val bundle = Bundle().apply {
+            putString("ui_type", uiType) // "heart" or "switch"
+            putBoolean("favourite", isFavourite)
+        }
+        Firebase.analytics.logEvent("favourite_toggled", bundle)
     }
 
 
@@ -83,6 +127,7 @@ class AddMealActivity : AppCompatActivity() {
                 onBackPressedDispatcher.onBackPressed()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -147,7 +192,7 @@ class AddMealActivity : AppCompatActivity() {
     private fun uploadImage(mealType: String, imageUri: Uri, onSuccess: (String) -> Unit) {
         val userId = Firebase.auth.currentUser!!.uid
         val timestamp = System.currentTimeMillis()
-        val path = "Recipes/$mealType/$userId/$timestamp.jpg"
+        val path = "Recipes/$userId/$mealType/$timestamp.jpg"
 
         storageRef.child(path).putFile(imageUri)
             .addOnSuccessListener { task ->
@@ -155,9 +200,21 @@ class AddMealActivity : AppCompatActivity() {
                     ?.addOnSuccessListener { url ->
                         onSuccess(url.toString())
                     }
-                    ?.addOnFailureListener { handleFailure("Image url download failed", it, "add_recipe_url_failure") }
+                    ?.addOnFailureListener {
+                        handleFailure(
+                            "Image url download failed",
+                            it,
+                            "add_recipe_url_failure"
+                        )
+                    }
             }
-            .addOnFailureListener { handleFailure("Image upload to Firebase Storage failed", it, "add_recipe_storage_failure") }
+            .addOnFailureListener {
+                handleFailure(
+                    "Image upload to Firebase Storage failed",
+                    it,
+                    "add_recipe_storage_failure"
+                )
+            }
     }
 
     private fun createMapOfMeal(imageUrl: String): HashMap<String, Any> {
@@ -172,14 +229,14 @@ class AddMealActivity : AppCompatActivity() {
             "ingredients" to Json.encodeToString(filteredIngredients),
             "imageUrl" to imageUrl,
             "rating" to binding.ratingBar.rating,
-            "favourite" to binding.favSwitch.isChecked
+            "favourite" to isFavourite
         )
     }
 
     private fun saveMealToFirestore(mealType: String, meal: HashMap<String, Any>) {
         val userId = Firebase.auth.currentUser!!.uid
 
-        Firebase.firestore.collection("Recipes/$mealType/$userId")
+        Firebase.firestore.collection("Recipes/$userId/$mealType")
             .add(meal)
             .addOnSuccessListener {
                 clearTextFields()
@@ -190,7 +247,11 @@ class AddMealActivity : AppCompatActivity() {
                 ).setAction("OK") {}.show()
             }
             .addOnFailureListener {
-                handleFailure("Recipe upload to Firestore failed", it, "add_recipe_firestore_failure")
+                handleFailure(
+                    "Recipe upload to Firestore failed",
+                    it,
+                    "add_recipe_firestore_failure"
+                )
             }
     }
 
@@ -205,7 +266,6 @@ class AddMealActivity : AppCompatActivity() {
     }
 
 
-
     private fun clearTextFields() {
         clearIngredients()
 
@@ -213,8 +273,8 @@ class AddMealActivity : AppCompatActivity() {
         binding.editTextDescription.text?.clear()
         binding.editTextRecipe.text?.clear()
         binding.ratingBar.rating = 0F
-        binding.favSwitch.isChecked = false
-
+        binding.switchFav.isChecked = false
+        binding.btnFav.setImageResource(R.drawable.outline_favourite_48)
         binding.imageViewAdd.setImageDrawable(null)
         uri = null
     }

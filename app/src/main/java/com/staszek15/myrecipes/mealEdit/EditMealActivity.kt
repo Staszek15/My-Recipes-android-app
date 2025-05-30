@@ -103,7 +103,7 @@ class EditMealActivity : AppCompatActivity() {
         binding.editTextDescription.setText(clickedMeal.description)
         binding.editTextRecipe.setText(clickedMeal.recipe)
         binding.ratingBar.rating = clickedMeal.rating
-        binding.favSwitch.isChecked = clickedMeal.favourite
+        binding.switchFav.isChecked = clickedMeal.favourite
     }
 
 
@@ -153,7 +153,7 @@ class EditMealActivity : AppCompatActivity() {
 
     private fun updateMealInFirestore(mealType: String, updatedMeal: HashMap<String, Any>) {
         val userId = Firebase.auth.currentUser!!.uid
-        Firebase.firestore.collection("Recipes/$mealType/$userId").document(clickedDocument)
+        Firebase.firestore.collection("Recipes/$userId/$mealType").document(clickedDocument)
             .set(updatedMeal)
             .addOnSuccessListener {
                 val resultIntent = Intent()
@@ -175,7 +175,7 @@ class EditMealActivity : AppCompatActivity() {
     private fun uploadImage(mealType: String, imageUri: Uri, onSuccess: (String) -> Unit) {
         val userId = Firebase.auth.currentUser!!.uid
         val timestamp = System.currentTimeMillis()
-        val path = "Recipes/$mealType/$userId/$timestamp.jpg"
+        val path = "Recipes/$userId/$mealType/$timestamp.jpg"
 
         storageRef.child(path).putFile(imageUri)
             .addOnSuccessListener { task ->
@@ -264,7 +264,7 @@ class EditMealActivity : AppCompatActivity() {
             "ingredients" to Json.encodeToString(filteredIngredients),
             "imageUrl" to imageUrl,
             "rating" to binding.ratingBar.rating,
-            "favourite" to binding.favSwitch.isChecked
+            "favourite" to binding.switchFav.isChecked
         )
     }
 
@@ -279,7 +279,7 @@ class EditMealActivity : AppCompatActivity() {
             ingredients = Json.encodeToString(filteredIngredients),
             imageUrl = imageUrl,
             rating = binding.ratingBar.rating,
-            favourite = binding.favSwitch.isChecked
+            favourite = binding.switchFav.isChecked
         )
     }
 

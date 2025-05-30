@@ -1,9 +1,7 @@
 package com.staszek15.myrecipes.authorization
 
-import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.ktx.Firebase
 import com.staszek15.myrecipes.R
 import com.staszek15.myrecipes.databinding.FragmentLogInBinding
@@ -63,31 +62,47 @@ class LogInFragment : Fragment() {
         binding.logIn.setOnClickListener {
             if (validatorLogIn(binding.etEmail, binding.etPassword)) {
 
+                val email = binding.etEmail.text.toString()
+                val password = binding.etPassword.text.toString()
                 val loadingDialog = loadingDialog(requireActivity())
 
-                Firebase.auth.signInWithEmailAndPassword(
-                    binding.etEmail.text.toString(),
-                    binding.etPassword.text.toString()
-                )
+                Firebase.auth.signInWithEmailAndPassword(email, password)
                     .addOnSuccessListener {
                         loadingDialog?.dismiss()
+
+                        Firebase.analytics.logEvent("login", null)
+
                         val intent = Intent(requireActivity(), MainActivity::class.java)
                         startActivity(intent)
                     }
                     .addOnFailureListener { exception ->
                         loadingDialog?.dismiss()
 
-                        val message = when (exception) {
-                            is FirebaseAuthInvalidUserException,
-                            is FirebaseAuthInvalidCredentialsException -> {
-                                "Incorrect email or password."
-                            }
-                            else -> {
-                                Log.e("Login", "Unexpected login failure", exception)
-                                Firebase.analytics.logEvent("login_failure", null)
-                                "Login failed. Please try again later."
+                        // Default message
+                        var message = "Login failed. Please try again later."
+
+                        // Handle known cases
+                        if (exception is FirebaseAuthInvalidUserException || exception is FirebaseAuthInvalidCredentialsException) {
+                            message = "Incorrect email or password."
+                        } else {
+                            FirebaseCrashlytics.getInstance().apply {
+                                log("Unexpected login failure")
+                                setCustomKey("email", email)
+                                setCustomKey("exception_type", exception::class.java.simpleName)
+                                setCustomKey(
+                                    "message",
+                                    exception.localizedMessage ?: "Unknown error"
+                                )
+                                recordException(exception)
                             }
                         }
+
+                        val bundle = Bundle().apply {
+                            putString("error_type", exception::class.java.simpleName)
+                            putString("error_message", exception.localizedMessage)
+                        }
+                        Firebase.analytics.logEvent("login_failure", bundle)
+
                         val snackbar = Snackbar.make(
                             binding.root,
                             message,
@@ -98,11 +113,12 @@ class LogInFragment : Fragment() {
             }
         }
 
+
         binding.remindPass.setOnClickListener { findNavController().navigate(R.id.action_LogInFragment_to_forgotPasswordFragment) }
 
         binding.googleLogIn.setOnClickListener {
-            val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
-                .setFilterByAuthorizedAccounts(true) // Query only signed up google accounts on the device
+            val googleIdOption = GetGoogleIdOption.Builder()
+                .setFilterByAuthorizedAccounts(true) // Only existing signed-up accounts
                 .setServerClientId(getString(R.string.WEB_CLIENT_ID))
                 .build()
 
@@ -116,63 +132,105 @@ class LogInFragment : Fragment() {
                 try {
                     val result = credentialManager.getCredential(requireContext(), request)
                     handleSignIn(result)
+
                     Toast.makeText(
                         requireContext(),
                         "Welcome! You logged in successfully.",
                         Toast.LENGTH_LONG
                     ).show()
+                    Firebase.analytics.logEvent("google_login", null)
+
                 } catch (e: GetCredentialException) {
-                    Log.e("MainActivity", "GetCredentialException", e)
+                    FirebaseCrashlytics.getInstance().apply {
+                        log("Google login failed")
+                        setCustomKey("exception_type", e::class.java.simpleName)
+                        setCustomKey("error_message", e.localizedMessage ?: "Unknown")
+                        recordException(e)
+                    }
+
+                    val bundle = Bundle().apply {
+                        putString("error_type", e::class.java.simpleName)
+                        putString("stage", "google_login")
+                    }
+                    Firebase.analytics.logEvent("google_login_failure", bundle)
+
+                    Toast.makeText(
+                        requireContext(),
+                        "Google sign-in failed. Please try again.",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
     }
 
     private fun handleSignIn(result: GetCredentialResponse) {
-        // Handle the successfully returned credential.
         when (val credential = result.credential) {
             is CustomCredential -> {
                 if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                     try {
-                        // Use googleIdTokenCredential and extract id to validate and
-                        // authenticate on your server.
                         val googleIdTokenCredential =
                             GoogleIdTokenCredential.createFrom(credential.data)
-
-                        // TODO: Send [googleIdTokenCredential.idToken] to your backend
-                        // my added part
-                        // Sign in to Firebase with using the token
                         firebaseAuthWithGoogle(googleIdTokenCredential.idToken)
 
                     } catch (e: GoogleIdTokenParsingException) {
-                        Log.e("MainActivity", "handleSignIn:", e)
+                        FirebaseCrashlytics.getInstance().apply {
+                            log("GoogleIdToken parsing failed in handleSignIn")
+                            setCustomKey("stage", "token_parsing")
+                            setCustomKey("exception_type", e::class.java.simpleName)
+                            setCustomKey("message", e.localizedMessage ?: "Unknown error")
+                            recordException(e)
+                        }
+                        Firebase.analytics.logEvent("google_login_failure", Bundle().apply {
+                            putString("error_type", e::class.java.simpleName)
+                            putString("stage", "token_parsing")
+                        })
                     }
                 } else {
-                    // Catch any unrecognized custom credential type here.
-                    Log.e("MainActivity", "Unexpected type of credential")
+                    FirebaseCrashlytics.getInstance().apply {
+                        log("Unexpected custom credential type in handleSignIn")
+                        setCustomKey("stage", "unexpected_credential_type")
+                        setCustomKey("credential_type", credential.type ?: "null")
+                    }
+                    Firebase.analytics.logEvent("google_login_failure", Bundle().apply {
+                        putString("stage", "unexpected_credential_type")
+                    })
                 }
             }
 
             else -> {
-                // Catch any unrecognized credential type here.
-                Log.e("MainActivity", "Unexpected type of credential")
+                FirebaseCrashlytics.getInstance().log("Unrecognized credential in handleSignIn")
+                Firebase.analytics.logEvent("google_login_failure", Bundle().apply {
+                    putString("stage", "unknown_credential")
+                })
             }
         }
     }
 
     private fun firebaseAuthWithGoogle(idToken: String) {
         val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
+
         Firebase.auth.signInWithCredential(firebaseCredential)
-            // there was addOnCompleteListener(this) but idk why this as it was not used later on
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithGoogleCredential:success")
+                    Firebase.analytics.logEvent("google_auth", null)
                     val intent = Intent(requireActivity(), MainActivity::class.java)
                     startActivity(intent)
                 } else {
-                    // If sign in fails, display a message to the user
-                    Log.w(TAG, "signInWithGoogleCredential:failure", task.exception)
+                    val exception = task.exception
+                    FirebaseCrashlytics.getInstance().apply {
+                        log("Firebase signInWithCredential failed")
+                        setCustomKey("stage", "firebase_auth_with_google")
+                        setCustomKey("exception_type", exception?.javaClass?.simpleName ?: "null")
+                        setCustomKey("message", exception?.localizedMessage ?: "Unknown error")
+                        recordException(exception ?: Exception("Unknown Firebase auth failure"))
+                    }
+                    Firebase.analytics.logEvent("google_auth_failure", Bundle().apply {
+                        putString("stage", "firebase_auth_with_google")
+                        putString("error_type", exception?.javaClass?.simpleName ?: "Unknown")
+                    })
+                    Toast.makeText(requireContext(), "Google login failed.", Toast.LENGTH_LONG)
+                        .show()
                 }
             }
     }

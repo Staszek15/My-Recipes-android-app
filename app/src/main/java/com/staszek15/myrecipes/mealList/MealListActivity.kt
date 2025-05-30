@@ -58,7 +58,7 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
         val userId = Firebase.auth.currentUser!!.uid
 
         if (mealType != "Favourite") {
-            Firebase.firestore.collection("Recipes/$mealType/$userId")
+            Firebase.firestore.collection("Recipes/$userId/$mealType")
                 .get()
                 .addOnSuccessListener { result ->
                     val database = MealDatabase.getMealDatabase(this)
@@ -95,7 +95,7 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
                 withContext(Dispatchers.IO) {
                     for (i in types) {
                         try {
-                            val result = Firebase.firestore.collection("Recipes/$i/$userId")
+                            val result = Firebase.firestore.collection("Recipes/$userId/$i")
                                 .whereEqualTo("favourite", true)
                                 .get()
                                 .await()

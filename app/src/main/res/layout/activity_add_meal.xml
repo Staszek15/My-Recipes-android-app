@@ -34,7 +34,7 @@
                     android:id="@+id/image_view_add"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/dinner"
+                    android:background="@drawable/meal"
                     android:backgroundTint="#85FFFFFF"
                     android:backgroundTintMode="src_over"
                     android:scaleType="centerCrop" />
@@ -44,11 +44,10 @@
                     android:layout_width="96dp"
                     android:layout_height="96dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/outline_add_photo_alternate_24"/>
+                    android:src="@drawable/outline_add_photo_alternate_24" />
             </FrameLayout>
 
         </androidx.cardview.widget.CardView>
-
 
 
         <RatingBar
@@ -65,14 +64,41 @@
             android:progressTint="?attr/colorPrimary"
             tools:rating="3.5f" />
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/fav_switch"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Add this meal to favourites"
-            android:textSize="20sp"
-            app:switchMinWidth="50dp" />
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_marginEnd="24dp"
+                android:id="@+id/tv_fav"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add to favourites"
+                android:textSize="24sp"/>
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switch_fav"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                app:switchMinWidth="50dp" />
+
+
+            <ImageButton
+                android:id="@+id/btn_fav"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:src="@drawable/outline_favourite_48"
+                android:visibility="visible"
+                app:tint="@color/raspberry" />
+
+
+
+        </LinearLayout>
 
 
         <com.google.android.material.textfield.TextInputLayout
@@ -129,8 +155,8 @@
                 android:gravity="top"
                 android:inputType="textMultiLine"
                 android:lines="5"
-                android:minLines="5"
                 android:maxLength="130"
+                android:minLines="5"
                 tools:text="This will be a long description to see how it looks. This will be a long description to see how it looks. This will be a long" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -147,8 +173,8 @@
                 android:id="@+id/rv_ingredients"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:listitem="@layout/ingredient_add_item"
-                tools:itemCount="4" />
+                tools:itemCount="4"
+                tools:listitem="@layout/ingredient_add_item" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -162,14 +188,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:layout_weight="1"
-                    app:icon="@drawable/baseline_add_24"
                     android:padding="12dp"
                     android:text="Add Ingredient"
                     android:textColor="#707070"
                     app:backgroundTint="@android:color/transparent"
                     app:cornerRadius="8dp"
-                    app:iconTint="@color/grey_icon"
+                    app:icon="@drawable/baseline_add_24"
                     app:iconSize="24dp"
+                    app:iconTint="@color/grey_icon"
                     app:strokeColor="#808080"
                     app:strokeWidth="2dp" />
 
@@ -178,13 +204,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    app:icon="@drawable/baseline_delete_24"
-                    app:iconSize="24dp"
                     android:padding="12dp"
                     android:text="Clear"
                     android:textColor="#707070"
                     app:backgroundTint="@android:color/transparent"
                     app:cornerRadius="8dp"
+                    app:icon="@drawable/baseline_delete_24"
+                    app:iconSize="24dp"
                     app:iconTint="@color/grey_icon"
                     app:strokeColor="#808080"
                     app:strokeWidth="2dp" />
@@ -219,7 +245,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
             android:layout_marginBottom="28dp"
-            android:text="Add" />
+            android:text="Save recipe" />
 
     </LinearLayout>
 
