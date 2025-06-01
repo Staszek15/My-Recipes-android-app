@@ -3,19 +3,22 @@ package com.staszek15.myrecipes.mealAdd
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.staszek15.myrecipes.databinding.IngredientAddItemBinding
 
 
 class AddIngredientAdapter(
-    private var ingredientList: MutableList<IngredientClass>):
+    private var ingredientList: MutableList<IngredientClass>,
+    private var showXButton: Boolean):
     RecyclerView.Adapter<AddIngredientAdapter.AddIngredientViewHolder>(){
 
     inner class AddIngredientViewHolder(binding: IngredientAddItemBinding):
         RecyclerView.ViewHolder(binding.root) {
         val amountField = binding.etAmount
         val ingredientField = binding.etIngredient
+        val removeButton = binding.btnRemove
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddIngredientViewHolder {
@@ -25,7 +28,6 @@ class AddIngredientAdapter(
     }
 
     override fun onBindViewHolder(holder: AddIngredientViewHolder, position: Int) {
-
         // remove text listeners if they exist to avoid OutOfBound Errors due to clearing recyclerView
         // when adding new recipe
         holder.amountField.removeTextChangedListener(holder.amountField.tag as TextWatcher?)
@@ -57,10 +59,18 @@ class AddIngredientAdapter(
         holder.ingredientField.tag = ingredientTextWatcher
         holder.ingredientField.setText(ingredientList[position].ingredient)
 
+        if (showXButton) {
+            holder.removeButton.visibility = View.VISIBLE
+            holder.removeButton.setOnClickListener {
+                ingredientList.removeAt(holder.adapterPosition)
+                notifyItemRemoved(holder.adapterPosition)
+            }
+        } else {
+            holder.removeButton.visibility = View.GONE
+        }
     }
 
     override fun getItemCount(): Int {
         return ingredientList.size
     }
-
 }

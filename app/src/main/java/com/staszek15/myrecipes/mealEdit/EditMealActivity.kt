@@ -95,7 +95,7 @@ class EditMealActivity : AppCompatActivity() {
         // ingredients list
         ingredientsList =
             Json.decodeFromString<MutableList<IngredientClass>>(clickedMeal.ingredients.toString())
-        binding.rvIngredients.adapter = AddIngredientAdapter(ingredientsList)
+        binding.rvIngredients.adapter = AddIngredientAdapter(ingredientsList, showXButton = false)
         binding.rvIngredients.layoutManager = LinearLayoutManager(applicationContext)
 
         binding.dropdownType.setText(clickedMeal.type)

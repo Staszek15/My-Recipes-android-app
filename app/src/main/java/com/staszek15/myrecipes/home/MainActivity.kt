@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity(), HomeListAdapter.RecyclerViewEvent {
     }
 
     private fun setUpClickListeners() {
-        binding.homeFavouriteCardView.setOnClickListener {
+        binding.ivFavourite.setOnClickListener {
             val intent = Intent(this, MealListActivity::class.java)
             intent.putExtra("mealType", "Favourites")
             startActivity(intent)

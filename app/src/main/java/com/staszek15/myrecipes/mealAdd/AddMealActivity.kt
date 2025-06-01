@@ -51,15 +51,21 @@ class AddMealActivity : AppCompatActivity() {
         fetchRemoteConfig()
         setupDropdownMenu(mealType)
         handleImageSelection()
-        setupIngredientRecyclerView(ingredientsList)
         handleClickListeners(mealType)
         overrideBackNavigation()
     }
 
     private fun fetchRemoteConfig() {
+        Firebase.remoteConfig.setDefaultsAsync(
+            mapOf(
+                "favourites_ui_heart" to false,
+                "ingredient_x_button" to false
+            )
+        )
         Firebase.remoteConfig.fetchAndActivate()
             .addOnCompleteListener {
                 setupRemoteConfigUI()
+                setupIngredientRecyclerView(ingredientsList)
             }
     }
 
@@ -116,7 +122,8 @@ class AddMealActivity : AppCompatActivity() {
 
 
     private fun setupIngredientRecyclerView(ingredientsList: MutableList<IngredientClass>) {
-        val adapterIngredients = AddIngredientAdapter(ingredientsList)
+        val ingredientXButton = Firebase.remoteConfig.getBoolean("ingredient_x_button")
+        val adapterIngredients = AddIngredientAdapter(ingredientsList, ingredientXButton)
         binding.rvIngredients.adapter = adapterIngredients
         binding.rvIngredients.layoutManager = LinearLayoutManager(applicationContext)
     }
@@ -127,7 +134,6 @@ class AddMealActivity : AppCompatActivity() {
                 onBackPressedDispatcher.onBackPressed()
                 true
             }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -143,7 +149,6 @@ class AddMealActivity : AppCompatActivity() {
         binding.ButtonDeleteIngredient.setOnClickListener {
             showClearIngredientsDialog()
         }
-
         // button add meal
         binding.buttonAdd.setOnClickListener {
             binding.buttonAdd.isEnabled = false
@@ -167,6 +172,13 @@ class AddMealActivity : AppCompatActivity() {
                 uploadImage(mealType, imageUri) { imageUrl ->
                     val newMeal = createMapOfMeal(imageUrl)
                     saveMealToFirestore(mealType, newMeal)
+                    val bundle = Bundle().apply {
+                        putBoolean("is_favourite", isFavourite)
+                        putInt("ingredient_valid_count", ingredientsList.count { !it.ingredient.isNullOrBlank() })
+                        putInt("ingredient_invalid_count", ingredientsList.count { it.ingredient.isNullOrBlank() })
+                    }
+                    Firebase.analytics.logEvent("recipe_added", bundle)
+
                     loadingDialog?.dismiss()
                     binding.buttonAdd.isEnabled = true
                 }
@@ -178,7 +190,6 @@ class AddMealActivity : AppCompatActivity() {
                 binding.buttonAdd.isEnabled = true
             }
         }
-
     }
 
     private fun isInputValid(): Boolean {
@@ -256,7 +267,6 @@ class AddMealActivity : AppCompatActivity() {
     }
 
     private fun handleFailure(logMessage: String, exception: Exception, analyticsEvent: String) {
-        Log.e("Add recipe", logMessage, exception)
         Firebase.analytics.logEvent(analyticsEvent, null)
         Snackbar.make(
             binding.root,
@@ -268,7 +278,6 @@ class AddMealActivity : AppCompatActivity() {
 
     private fun clearTextFields() {
         clearIngredients()
-
         binding.editTextTitle.text?.clear()
         binding.editTextDescription.text?.clear()
         binding.editTextRecipe.text?.clear()
@@ -276,6 +285,7 @@ class AddMealActivity : AppCompatActivity() {
         binding.switchFav.isChecked = false
         binding.btnFav.setImageResource(R.drawable.outline_favourite_48)
         binding.imageViewAdd.setImageDrawable(null)
+        binding.iconAddPhoto.visibility = View.VISIBLE
         uri = null
     }
 

@@ -3,6 +3,7 @@ package com.staszek15.myrecipes.settings
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.ktx.auth
@@ -24,6 +25,14 @@ class SettingsActivity : AppCompatActivity() {
         handleClickListeners()
         binding.tvEmail.text = Firebase.auth.currentUser?.email.toString()
         binding.tvUid.text = Firebase.auth.currentUser?.uid.toString()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            finish()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun handleClickListeners() {

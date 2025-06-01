@@ -12,28 +12,23 @@
     android:background="@android:color/transparent"
     android:orientation="vertical">
 
-    <androidx.cardview.widget.CardView
+
+    <com.google.android.material.card.MaterialCardView
+        app:strokeColor="@color/grey_icon"
+        app:strokeWidth="3dp"
+        android:id="@+id/card_view_image_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:cardCornerRadius="24dp"
-        android:backgroundTint="@color/grey_icon">
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:elevation="24dp"
+        app:cardCornerRadius="24dp">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card_view_image_container"
+        <ImageView
+            android:id="@+id/image_view_item"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:elevation="24dp"
-            android:layout_margin="6dp"
-            app:cardCornerRadius="16dp">
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/dinners" />
 
-            <ImageView
-                android:id="@+id/image_view_item"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                tools:src="@drawable/dinners" />
-
-        </androidx.cardview.widget.CardView>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 </LinearLayout>

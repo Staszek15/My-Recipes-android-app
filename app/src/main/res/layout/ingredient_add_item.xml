@@ -10,8 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Amount"
-        android:layout_weight="2"
-        android:layout_marginEnd="8dp">
+        android:layout_weight="3"
+        android:layout_marginEnd="4dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_amount"
@@ -22,11 +22,11 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:layout_weight="1"
+        android:layout_weight="2"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="4dp"
         android:hint="Ingredient">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -37,6 +37,13 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_remove"
+        android:padding="4dp"
+        android:background="@android:color/transparent"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:src="@drawable/outline_cancel_24"/>
 
 
 </LinearLayout>
