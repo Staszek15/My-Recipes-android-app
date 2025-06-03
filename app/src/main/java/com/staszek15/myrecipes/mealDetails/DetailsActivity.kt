@@ -139,7 +139,7 @@ class DetailsActivity : AppCompatActivity() {
                     val userId = Firebase.auth.currentUser!!.uid
                     val mealType = clickedMeal.type
                     Firebase.firestore
-                        .collection("Recipes/$mealType/$userId")
+                        .collection("Recipes/$userId/$mealType")
                         .document(clickedDocument!!)
                         .delete()
                 }

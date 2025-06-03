@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="175dp"
+    android:layout_height="wrap_content"
     android:background="@color/beige_background"
     android:orientation="horizontal"
     android:padding="12dp">
@@ -15,6 +15,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:layout_gravity="center"
         android:orientation="vertical">
 
         <TextView
@@ -31,6 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:justificationMode="inter_word"
             android:fontFamily="sans-serif-light"
             android:textColor="#777777"
             android:textSize="13sp"
@@ -71,11 +73,14 @@
         android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="140dp"
+        android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:layout_marginStart="12dp">
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
+            app:strokeWidth="2dp"
+            app:strokeColor="@color/grey_icon"
             android:id="@+id/card_view_image_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -86,8 +91,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                tools:src="@drawable/empty_image" />
-        </androidx.cardview.widget.CardView>
+                tools:src="@drawable/avocado_tuna_sandwich" />
+        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 
 </LinearLayout>
