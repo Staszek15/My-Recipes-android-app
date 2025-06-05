@@ -172,13 +172,27 @@ class AddMealActivity : AppCompatActivity() {
                 uploadImage(mealType, imageUri) { imageUrl ->
                     val newMeal = createMapOfMeal(imageUrl)
                     saveMealToFirestore(mealType, newMeal)
+
+                    val ingredient_valid_count = ingredientsList.count { !it.ingredient.isNullOrBlank() }
+                    val ingredient_invalid_count = ingredientsList.count { it.ingredient.isNullOrBlank() }
                     val bundle = Bundle().apply {
                         putBoolean("is_favourite", isFavourite)
-                        putInt("ingredient_valid_count", ingredientsList.count { !it.ingredient.isNullOrBlank() })
-                        putInt("ingredient_invalid_count", ingredientsList.count { it.ingredient.isNullOrBlank() })
+                        putInt("ingredient_valid_count", ingredient_valid_count)
+                        putInt("ingredient_invalid_count", ingredient_invalid_count)
                     }
                     Firebase.analytics.logEvent("recipe_added", bundle)
-
+                    if (isFavourite) {
+                        Firebase.analytics.logEvent("recipe_added_fav", bundle)
+                    }
+                    if (ingredient_invalid_count > 0) {
+                        Firebase.analytics.logEvent("ingredients_invalid_min_1", null)
+                    }
+                    if (ingredient_valid_count > 7) {
+                        Firebase.analytics.logEvent("ingredients_valid_min_8", null)
+                    }
+                    if (ingredient_valid_count > 11) {
+                        Firebase.analytics.logEvent("ingredients_valid_min_12", null)
+                    }
                     loadingDialog?.dismiss()
                     binding.buttonAdd.isEnabled = true
                 }
@@ -282,6 +296,7 @@ class AddMealActivity : AppCompatActivity() {
         binding.editTextDescription.text?.clear()
         binding.editTextRecipe.text?.clear()
         binding.ratingBar.rating = 0F
+        isFavourite = false
         binding.switchFav.isChecked = false
         binding.btnFav.setImageResource(R.drawable.outline_favourite_48)
         binding.imageViewAdd.setImageDrawable(null)
@@ -290,7 +305,7 @@ class AddMealActivity : AppCompatActivity() {
     }
 
     private fun setupDropdownMenu(mealType: String) {
-        val items = listOf("Dinner", "Breakfast", "Dessert", "Shake", "Alcohol", "Decoration")
+        val items = listOf("Breakfast", "Supper", "Dinner", "Dessert", "Shake", "Drink")
         val adapter = ArrayAdapter(this, R.layout.dropdown_item, items)
         binding.dropdownType.setAdapter(adapter)
         binding.dropdownType.setText(mealType, false)
@@ -329,6 +344,7 @@ class AddMealActivity : AppCompatActivity() {
             .setMessage("Do you want to delete all of the entered ingredients?")
             .setPositiveButton("Delete") { _, _ ->
                 clearIngredients()
+                Firebase.analytics.logEvent("ingredients_clear", null)
             }
             .setNegativeButton("Dismiss") { dialog, _ ->
                 dialog.dismiss()

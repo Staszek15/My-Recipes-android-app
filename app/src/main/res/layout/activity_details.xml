@@ -26,7 +26,7 @@
                 android:layout_height="200dp"
                 android:scaleType="centerCrop"
                 app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.RoundedCorner"
-                tools:src="@drawable/avocado_tuna_sandwich" />
+                tools:src="@drawable/cottage_cheese_pancakes" />
 
 
             <TextView

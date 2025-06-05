@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.staszek15.myrecipes.settings.SettingsActivity
 import com.staszek15.myrecipes.mealList.MealListActivity
@@ -19,6 +20,7 @@ class MainActivity : AppCompatActivity(), HomeListAdapter.RecyclerViewEvent {
     private var homeList = createHomeList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

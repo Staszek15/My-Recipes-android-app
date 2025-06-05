@@ -88,7 +88,7 @@ class EditMealActivity : AppCompatActivity() {
         //binding.imageViewAdd.scaleType = ImageView.ScaleType.CENTER_CROP
 
         // meal type dropdown menu
-        val items = listOf("Dinner", "Breakfast", "Dessert", "Shake", "Alcohol", "Decoration")
+        val items = listOf("Breakfast", "Supper", "Dinner", "Dessert", "Shake", "Drink")
         val adapter = ArrayAdapter(this, R.layout.dropdown_item, items)
         binding.dropdownType.setAdapter(adapter)
 
@@ -104,6 +104,7 @@ class EditMealActivity : AppCompatActivity() {
         binding.editTextRecipe.setText(clickedMeal.recipe)
         binding.ratingBar.rating = clickedMeal.rating
         binding.switchFav.isChecked = clickedMeal.favourite
+        binding.btnFav.setImageResource(if (clickedMeal.favourite) R.drawable.baseline_favorite_48 else R.drawable.outline_favourite_48)
     }
 
 

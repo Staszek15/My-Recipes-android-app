@@ -5,6 +5,7 @@
         <item name="colorPrimary">@color/raspberry</item>
         <item name="android:statusBarColor">@color/dark_beige</item>
         <item name="actionBarStyle">@style/StyleActionBar</item>
+        <item name="android:navigationBarColor">@color/grey_icon</item>
         <!-- <item name="android:navigationBarColor">@color/dark_beige</item> -->
 
 

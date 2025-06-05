@@ -11,6 +11,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -22,6 +23,7 @@ import com.staszek15.myrecipes.databinding.ActivityMealListBinding
 import com.staszek15.myrecipes.loadingDialog
 import com.staszek15.myrecipes.mealDB.MealDatabase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -45,6 +47,7 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
 
     override fun onResume() {
         super.onResume()
+        mealList.clear()
         setupFirestore()
         handleClickListeners()
     }
@@ -99,7 +102,7 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
                     Log.e("Firestore", "Error getting documents: ", e)
                 }
         } else {
-            val types = listOf("Dinner", "Breakfast", "Supper", "Dessert", "Shake", "Alcohol", "Decoration")
+            val types = listOf("Breakfast", "Supper", "Dinner", "Dessert", "Shake", "Drink")
             lifecycleScope.launch {
                 withContext(Dispatchers.IO) {
                     for (i in types) {
@@ -116,6 +119,7 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
                             }.toMutableList()
                             mealList.addAll(tempMealList)
                         } catch (e: Exception) {
+                            dialogJob.cancel()
                             loadingDialog?.dismiss()
                             Log.e("Firestore", "Error getting favourite documents: ", e)
                         }
@@ -154,6 +158,7 @@ class MealListActivity : AppCompatActivity(), MealListAdapter.RecyclerViewEvent 
             binding.fab.visibility = View.INVISIBLE
         } else {
             binding.fab.setOnClickListener {
+                Firebase.analytics.logEvent("button_add_recipe_clicked", null)
                 val intent = Intent(this, AddMealActivity::class.java)
                 intent.putExtra("mealType", mealType)
                 startActivity(intent)
