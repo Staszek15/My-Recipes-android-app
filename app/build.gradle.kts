@@ -1,3 +1,5 @@
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.commons.logging.LogFactory.release
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -9,11 +11,11 @@ plugins {
 }
 
 android {
-    namespace = "com.staszek15.myrecipes"
+    namespace = "com.staszek15.serveit"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.staszek15.myrecipes"
+        applicationId = "com.staszek15.serveit"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -26,6 +28,15 @@ android {
         viewBinding = true
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(project.property("RELEASE_STORE_FILE") as String)
+            storePassword = project.property("RELEASE_STORE_PASSWORD") as String
+            keyAlias = project.property("RELEASE_KEY_ALIAS") as String
+            keyPassword = project.property("RELEASE_KEY_PASSWORD") as String
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -33,6 +44,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
@@ -47,22 +59,22 @@ android {
 dependencies {
 
     //room
-    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-runtime:2.7.1")
     implementation("androidx.activity:activity-ktx:1.10.1")
+
+    implementation("com.github.bumptech.glide:glide:4.15.1")
+    implementation("androidx.activity:activity:1.10.1")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
     implementation("androidx.credentials:credentials:1.5.0")
     implementation("androidx.credentials:credentials-play-services-auth:1.5.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
-    implementation("com.github.bumptech.glide:glide:4.15.1")
-    implementation("androidx.activity:activity:1.10.1")
-    implementation("com.google.firebase:firebase-config-ktx:22.1.2")
-    implementation("com.google.firebase:firebase-crashlytics:19.4.3")
-    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
-
-    implementation("com.google.android.gms:play-services-auth:21.3.0")
-
-    implementation(platform("com.google.firebase:firebase-bom:33.12.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
+    implementation("com.google.firebase:firebase-config-ktx")
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-appcheck-playintegrity")
@@ -81,8 +93,8 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.8.9")
     implementation("androidx.navigation:navigation-ui-ktx:2.8.9")
 
-    implementation("androidx.core:core-ktx:1.15.0")
-    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.core:core-ktx:1.16.0")
+    implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     testImplementation("junit:junit:4.13.2")

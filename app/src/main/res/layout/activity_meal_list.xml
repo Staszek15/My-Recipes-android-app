@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:stateListAnimator="@null"
+    android:fitsSystemWindows="true"
     android:background="@color/beige_background">
 
     <LinearLayout

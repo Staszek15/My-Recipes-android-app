@@ -13,6 +13,7 @@ Garnish with a drizzle of cream and a sprinkle of cilantro. Serve with your basm
     <string name="welcome">Welcome to Serve\u00A0It!</string>
     <string name="create_acc">Create account</string>
     <string name="remind_password">Remind password</string>
+    <string name="ANDROID_CLIENT_ID">466024413319-64rd4lhfr4uoq789hnnosdcfvhr5hej7.apps.googleusercontent.com</string>
     <string name="WEB_CLIENT_ID">466024413319-1aovp1cac84bpdb3a01jut9rqo3as4mf.apps.googleusercontent.com</string>
     <string name="or"><u>or</u></string>
 </resources>

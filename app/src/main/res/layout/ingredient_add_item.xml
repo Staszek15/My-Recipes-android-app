@@ -17,6 +17,7 @@
             android:id="@+id/et_amount"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:inputType="textMultiLine"
             android:gravity="top" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -32,6 +33,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_ingredient"
             android:layout_width="match_parent"
+            android:inputType="textMultiLine"
             android:layout_height="match_parent"
             android:gravity="top"/>
 

@@ -5,8 +5,9 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/beige_background"
+    android:background="@drawable/background_details"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
     tools:context=".mealDetails.DetailsActivity">
 
     <ScrollView

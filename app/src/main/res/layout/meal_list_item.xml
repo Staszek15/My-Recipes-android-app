@@ -34,6 +34,8 @@
             android:layout_marginTop="4dp"
             android:justificationMode="inter_word"
             android:fontFamily="sans-serif-light"
+            android:maxLines="5"
+            android:ellipsize="end"
             android:textColor="#777777"
             android:textSize="13sp"
             tools:text="This will be a long description to see how it looks. This will be a long description to see how it looks. This will be a long description to see how it looks." />

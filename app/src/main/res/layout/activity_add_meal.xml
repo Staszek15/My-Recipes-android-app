@@ -6,7 +6,9 @@
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/beige_background">
+    android:background="@color/beige_background"
+    android:fitsSystemWindows="true"
+    android:paddingBottom="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -83,7 +85,7 @@
                 android:id="@+id/switch_fav"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:switchMinWidth="50dp" />
 
 
@@ -93,7 +95,7 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:src="@drawable/outline_favourite_48"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:tint="@color/raspberry" />
 
 
@@ -134,6 +136,7 @@
                 android:inputType="text"
                 android:maxLength="25"
                 android:singleLine="true"
+                android:imeOptions="actionDone"
                 tools:text="Tikka massala chicken" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -154,7 +157,6 @@
                 android:layout_height="match_parent"
                 android:gravity="top"
                 android:inputType="textMultiLine"
-                android:lines="5"
                 android:maxLength="130"
                 android:minLines="5"
                 tools:text="This will be a long description to see how it looks. This will be a long description to see how it looks. This will be a long" />
